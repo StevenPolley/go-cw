@@ -10,7 +10,10 @@ import (
 	"time"
 )
 
-type Companies []struct {
+//Used when more than one company is returned in a response.
+type Companies []Company
+
+type Company struct {
 	ID         int    `json:"id"`
 	Identifier string `json:"identifier"`
 	Name       string `json:"name"`
@@ -148,6 +151,20 @@ type Companies []struct {
 	} `json:"customFields"`
 }
 
+//Checks for HTTP errors, and if all looks good, returns the body of the HTTP response as a byte slice
+func getHTTPResponseBody(resp *http.Response) (body []byte) {
+	if resp.StatusCode != http.StatusOK {
+		out := fmt.Sprintf("CW API returned HTTP Status Code %s\n%s", resp.Status, resp.Body)
+		log.Fatal(out)
+		return make([]byte, 0)
+	} else {
+		body, err := ioutil.ReadAll(resp.Body)
+		check(err)
+
+		return body
+	}
+}
+
 func GetCompaniesByName(site *ConnectwiseSite, companyName string) *Companies {
 
 	companies := Companies{}
@@ -171,16 +188,35 @@ func GetCompaniesByName(site *ConnectwiseSite, companyName string) *Companies {
 	check(err)
 	defer response.Body.Close()
 
-	if response.StatusCode != http.StatusOK {
-		out := fmt.Sprintf("CW API returned HTTP Status Code %s\n%s", response.Status, response.Body)
-		log.Fatal(out)
-	} else {
-		body, err := ioutil.ReadAll(response.Body)
-		check(err)
-
-		check(json.Unmarshal(body, &companies))
-
-	}
+	body := getHTTPResponseBody(response)
+	check(json.Unmarshal(body, &companies))
 
 	return &companies
+}
+
+func GetCompanyByID(site *ConnectwiseSite, companyID int) *Company {
+
+	company := Company{}
+
+	//Build the request URL
+	var Url *url.URL
+	Url, err := url.Parse(site.Site)
+	check(err)
+	Url.Path += fmt.Sprintf("/company/companies/%d", companyID)
+
+	//Build and make the request
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", Url.String(), nil)
+	check(err)
+	req.Header.Set("Authorization", site.Auth)
+	req.Header.Set("Content-Type", "application/json")
+	response, err := client.Do(req)
+	check(err)
+	defer response.Body.Close()
+
+	body := getHTTPResponseBody(response)
+	fmt.Print(string(body))
+	check(json.Unmarshal(body, &company))
+
+	return &company
 }
