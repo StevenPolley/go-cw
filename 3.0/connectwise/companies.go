@@ -3,7 +3,6 @@ package connectwise
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"net/url"
 	"time"
 )
@@ -162,17 +161,7 @@ func GetCompaniesByName(site *ConnectwiseSite, companyName string) *Companies {
 	parameters.Add("conditions", "name=\""+companyName+"\"")
 	Url.RawQuery = parameters.Encode()
 
-	//Build and make the request
-	client := &http.Client{}
-	req, err := http.NewRequest("GET", Url.String(), nil)
-	check(err)
-	req.Header.Set("Authorization", site.Auth)
-	req.Header.Set("Content-Type", "application/json")
-	response, err := client.Do(req)
-	check(err)
-	defer response.Body.Close()
-
-	body := getHTTPResponseBody(response)
+	body := GetRequest(site, Url)
 	check(json.Unmarshal(body, &companies))
 
 	return &companies
@@ -188,17 +177,7 @@ func GetCompanyByID(site *ConnectwiseSite, companyID int) *Company {
 	check(err)
 	Url.Path += fmt.Sprintf("/company/companies/%d", companyID)
 
-	//Build and make the request
-	client := &http.Client{}
-	req, err := http.NewRequest("GET", Url.String(), nil)
-	check(err)
-	req.Header.Set("Authorization", site.Auth)
-	req.Header.Set("Content-Type", "application/json")
-	response, err := client.Do(req)
-	check(err)
-	defer response.Body.Close()
-
-	body := getHTTPResponseBody(response)
+	body := GetRequest(site, Url)
 	fmt.Print(string(body))
 	check(json.Unmarshal(body, &company))
 
