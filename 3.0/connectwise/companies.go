@@ -1,6 +1,12 @@
 package connectwise
 
 import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"net/url"
 	"time"
 )
 
@@ -140,4 +146,41 @@ type Companies []struct {
 		NumberOfDecimals int    `json:"numberOfDecimals"`
 		Value            string `json:"value"`
 	} `json:"customFields"`
+}
+
+func GetCompaniesByName(site *ConnectwiseSite, companyName string) *Companies {
+
+	companies := Companies{}
+
+	//Build the request URL
+	var Url *url.URL
+	Url, err := url.Parse(site.Site)
+	check(err)
+	Url.Path += "/company/companies"
+	parameters := url.Values{}
+	parameters.Add("conditions", "name=\""+companyName+"\"")
+	Url.RawQuery = parameters.Encode()
+
+	//Build and make the request
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", Url.String(), nil)
+	check(err)
+	req.Header.Set("Authorization", site.Auth)
+	req.Header.Set("Content-Type", "application/json")
+	response, err := client.Do(req)
+	check(err)
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		out := fmt.Sprintf("CW API returned HTTP Status Code %s\n%s", response.Status, response.Body)
+		log.Fatal(out)
+	} else {
+		body, err := ioutil.ReadAll(response.Body)
+		check(err)
+
+		check(json.Unmarshal(body, &companies))
+
+	}
+
+	return &companies
 }
