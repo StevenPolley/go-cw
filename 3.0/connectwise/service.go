@@ -3,7 +3,6 @@ package connectwise
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"net/url"
 	"time"
 )
@@ -175,6 +174,15 @@ type Ticket struct {
 	ContactPhoneExtension string `json:"contactPhoneExtension,omitempty"`
 }
 
+//TBD: For some reason the Info struct contained in TimeEntryReference does get data when the JSON is unmarshaled into this struct.  The ID works fine
+type TimeEntryReference struct {
+	ID   int
+	Info struct {
+		Notes    string
+		TimeHref string
+	}
+}
+
 func GetTicketByID(site *ConnectwiseSite, ticketID int) *Ticket {
 
 	ticket := Ticket{}
@@ -185,18 +193,23 @@ func GetTicketByID(site *ConnectwiseSite, ticketID int) *Ticket {
 	check(err)
 	Url.Path += fmt.Sprintf("/service/tickets/%d", ticketID)
 
-	//Build and make the request
-	client := &http.Client{}
-	req, err := http.NewRequest("GET", Url.String(), nil)
-	check(err)
-	req.Header.Set("Authorization", site.Auth)
-	req.Header.Set("Content-Type", "application/json")
-	response, err := client.Do(req)
-	check(err)
-	defer response.Body.Close()
-
-	body := getHTTPResponseBody(response)
+	body := GetRequest(site, Url)
 	check(json.Unmarshal(body, &ticket))
 
 	return &ticket
+}
+
+func GetTicketTimeEntriesByID(site *ConnectwiseSite, ticketID int) *[]TimeEntryReference {
+
+	timeEntryReference := []TimeEntryReference{}
+
+	var Url *url.URL
+	Url, err := url.Parse(site.Site)
+	check(err)
+	Url.Path += fmt.Sprintf("/service/tickets/%d/timeentries", ticketID)
+
+	body := GetRequest(site, Url)
+	check(json.Unmarshal(body, &timeEntryReference)) //  *[]TimeEntryReference
+
+	return &timeEntryReference
 }

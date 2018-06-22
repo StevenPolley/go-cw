@@ -8,7 +8,7 @@ import (
 )
 
 type Callback struct {
-	Id           int
+	ID           int
 	Description  string
 	Url          string
 	ObjectId     int
@@ -18,7 +18,9 @@ type Callback struct {
 	InactiveFlag bool
 }
 
-func GetCallbacks(site *ConnectwiseSite) {
+func GetCallbacks(site *ConnectwiseSite) *[]Callback {
+
+	callbacks := []Callback{}
 
 	//Build the request URL
 	var Url *url.URL
@@ -27,8 +29,9 @@ func GetCallbacks(site *ConnectwiseSite) {
 	Url.Path += "/system/callbacks"
 
 	body := GetRequest(site, Url)
-	fmt.Print(string(body))
-	//	check(json.Unmarshal(body, &ticket))
+	check(json.Unmarshal(body, &callbacks))
+
+	return &callbacks
 
 }
 
@@ -44,9 +47,8 @@ func NewCallback(site *ConnectwiseSite, callback Callback) {
 
 	jsonBuffer := bytes.NewReader(jsonCallback)
 
-	body := PostRequest(site, Url, jsonBuffer)
-
-	fmt.Print(string(body))
+	//body := PostRequest(site, Url, jsonBuffer)
+	PostRequest(site, Url, jsonBuffer)
 
 }
 

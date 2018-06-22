@@ -12,7 +12,7 @@ import (
 //Checks for HTTP errors, and if all looks good, returns the body of the HTTP response as a byte slice
 //TBD: Needs to accept 201 and 204 (returned for Create and Delete operations)
 func getHTTPResponseBody(resp *http.Response) []byte {
-	if resp.StatusCode != http.StatusOK {
+	if (resp.StatusCode != http.StatusOK) && (resp.StatusCode != http.StatusCreated) && (resp.StatusCode != http.StatusNoContent) {
 		out := fmt.Sprintf("CW API returned HTTP Status Code %s\n%s", resp.Status, resp.Body)
 		log.Fatal(out)
 		return make([]byte, 0)
