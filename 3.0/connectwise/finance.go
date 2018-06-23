@@ -6,8 +6,6 @@ import (
 	"net/url"
 )
 
-type Agreements []Agreement
-
 type Agreement struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
@@ -116,21 +114,13 @@ type Agreement struct {
 	} `json:"billToSite,omitempty"`
 }
 
-func GetAgreements(site *ConnectwiseSite) *Agreements {
-
-	agreements := Agreements{}
+func GetAgreements(site *ConnectwiseSite) *[]Agreement {
 
 	//Build the request URL
-	var Url *url.URL
-	Url, err := url.Parse(site.Site)
-	check(err)
-	Url.Path += "/finance/agreements"
-	parameters := url.Values{}
-	parameters.Add("conditions", "billCycleId=2")
-	parameters.Add("pageSize", "1000")
-	Url.RawQuery = parameters.Encode()
+	Url := BuildUrl(site, "/finance/agreements")
 
 	body := GetRequest(site, Url)
+	agreements := []Agreement{}
 	check(json.Unmarshal(body, &agreements))
 
 	return &agreements
@@ -139,11 +129,7 @@ func GetAgreements(site *ConnectwiseSite) *Agreements {
 
 func GetBillingCycles(site *ConnectwiseSite) {
 
-	//Build the request URL
-	var Url *url.URL
-	Url, err := url.Parse(site.Site)
-	check(err)
-	Url.Path += "/finance/billingCycles"
+	Url := BuildUrl(site, "/finance/billingCycles")
 
 	body := GetRequest(site, Url)
 	fmt.Print(string(body))

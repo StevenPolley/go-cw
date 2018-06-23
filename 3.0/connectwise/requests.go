@@ -9,6 +9,15 @@ import (
 	"net/url"
 )
 
+func BuildUrl(site *ConnectwiseSite, restAction string) *url.URL {
+	var Url *url.URL
+	Url, err := url.Parse(site.Site)
+	check(err)
+	Url.Path += restAction
+
+	return Url
+}
+
 //Checks for HTTP errors, and if all looks good, returns the body of the HTTP response as a byte slice
 //TBD: Needs to accept 201 and 204 (returned for Create and Delete operations)
 func getHTTPResponseBody(resp *http.Response) []byte {

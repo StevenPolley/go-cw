@@ -20,28 +20,20 @@ type Callback struct {
 
 func GetCallbacks(site *ConnectwiseSite) *[]Callback {
 
-	callbacks := []Callback{}
-
-	//Build the request URL
-	var Url *url.URL
-	Url, err := url.Parse(site.Site)
-	check(err)
-	Url.Path += "/system/callbacks"
-
+	Url := BuildUrl(site, "/system/callbacks")
 	body := GetRequest(site, Url)
+
+	callbacks := []Callback{}
 	check(json.Unmarshal(body, &callbacks))
 
 	return &callbacks
 
 }
 
+//TBD: This should return something?
 func NewCallback(site *ConnectwiseSite, callback Callback) {
 
-	var Url *url.URL
-	Url, err := url.Parse(site.Site)
-	check(err)
-	Url.Path += "/system/callbacks"
-
+	Url := BuildUrl(site, "/system/callbacks")
 	jsonCallback, err := json.Marshal(callback)
 	check(err)
 
@@ -54,13 +46,8 @@ func NewCallback(site *ConnectwiseSite, callback Callback) {
 
 func DeleteCallback(site *ConnectwiseSite, callback int) {
 
-	var Url *url.URL
-	Url, err := url.Parse(site.Site)
-	check(err)
-	Url.Path += fmt.Sprintf("/system/callbacks/%d", callback)
-
+	Url := BuildUrl(site, fmt.Sprintf("/system/callbacks/%d", callback))
 	body := DeleteRequest(site, Url)
-
 	fmt.Print(string(body))
 
 }

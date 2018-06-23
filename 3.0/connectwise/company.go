@@ -7,9 +7,6 @@ import (
 	"time"
 )
 
-//Used when more than one company is returned in a response.
-type Companies []Company
-
 type Company struct {
 	ID         int    `json:"id"`
 	Identifier string `json:"identifier"`
@@ -148,9 +145,9 @@ type Company struct {
 	} `json:"customFields"`
 }
 
-func GetCompaniesByName(site *ConnectwiseSite, companyName string) *Companies {
+func GetCompanyByName(site *ConnectwiseSite, companyName string) *[]Company {
 
-	companies := Companies{}
+	companies := []Company{}
 
 	//Build the request URL
 	var Url *url.URL

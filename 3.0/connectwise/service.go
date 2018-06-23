@@ -7,8 +7,6 @@ import (
 	"time"
 )
 
-type Tickets []Ticket
-
 type Ticket struct {
 	ID         int    `json:"id"`
 	Summary    string `json:"summary"`
@@ -185,15 +183,10 @@ type TimeEntryReference struct {
 
 func GetTicketByID(site *ConnectwiseSite, ticketID int) *Ticket {
 
-	ticket := Ticket{}
-
-	//Build the request URL
-	var Url *url.URL
-	Url, err := url.Parse(site.Site)
-	check(err)
-	Url.Path += fmt.Sprintf("/service/tickets/%d", ticketID)
+	Url := BuildUrl(site, fmt.Sprintf("/service/tickets/%d", ticketID))
 
 	body := GetRequest(site, Url)
+	ticket := Ticket{}
 	check(json.Unmarshal(body, &ticket))
 
 	return &ticket
@@ -201,14 +194,10 @@ func GetTicketByID(site *ConnectwiseSite, ticketID int) *Ticket {
 
 func GetTicketTimeEntriesByID(site *ConnectwiseSite, ticketID int) *[]TimeEntryReference {
 
-	timeEntryReference := []TimeEntryReference{}
-
-	var Url *url.URL
-	Url, err := url.Parse(site.Site)
-	check(err)
-	Url.Path += fmt.Sprintf("/service/tickets/%d/timeentries", ticketID)
+	Url := BuildUrl(site, fmt.Sprintf("/service/tickets/%d/timeentries", ticketID))
 
 	body := GetRequest(site, Url)
+	timeEntryReference := []TimeEntryReference{}
 	check(json.Unmarshal(body, &timeEntryReference)) //  *[]TimeEntryReference
 
 	return &timeEntryReference

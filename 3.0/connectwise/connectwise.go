@@ -19,6 +19,7 @@ func check(err error) {
 
 //Returns a ConnectwiseSite struct with the site and auth string available for use in API requests
 func NewSite(site string, publicKey string, privateKey string, company string) *ConnectwiseSite {
+	//The auth string must be formatted in this way when used in requests to the API
 	authString := fmt.Sprintf("%s+%s:%s", company, publicKey, privateKey)
 	authString = base64.StdEncoding.EncodeToString([]byte(authString))
 	authString = fmt.Sprintf("Basic %s", authString)

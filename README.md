@@ -19,14 +19,14 @@ import (
 
 const (
 	cwSite		= "https://yourconnectwisesite.com/v4_6_release/apis/3.0"
-	cwAPIKeyPrivate = "ASDLFK4ah89ad"
-	cwAPIKey	= "ASLDFKJ2342kl"
-	cwCompany	= "yourcompanyname"
+	cwAPIKeyPrivate = "ASDLFK4ah89ad" //Put in either your private API key or account password if using user impersonation
+	cwAPIKey	= "ASLDFKJ2342kl" //Put in either your public API key or account username if using user impersonation
+	cwCompany	= "yourcompanyname" //The connectwise company name
 )
 
 func main() {
 	cw := connectwise.NewSite(cwSite, cwAPIKey, cwAPIKeyPrivate, cwCompany)
-	companyDataByID := connectwise.GetCompaniesByID(cw, 2) //Retrieves company ID 2 from CW and returns pointer to struct struct
+	companyDataByID := connectwise.GetCompanyByID(cw, 2) //Retrieves company ID 2 from CW and returns type pointer to a slice of Company's
 	fmt.Println(*companyDataByID)
 }
 ```
