@@ -26,7 +26,7 @@ const (
 
 func main() {
 	cw := connectwise.NewSite(cwSite, cwAPIKey, cwAPIKeyPrivate, cwCompany)
-	companyDataByID := connectwise.GetCompanyByID(cw, 2) //Retrieves company ID 2 from CW and returns type pointer to a slice of Company's
-	fmt.Println(*companyDataByID)
+	companyDataByID := cw.GetCompanyByID(2) //Retrieves company ID 2 from CW and returns type pointer a Company
+	fmt.Println(*companyDataByID.Name)
 }
 ```
