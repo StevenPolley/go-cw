@@ -73,6 +73,14 @@ type TimeEntry struct {
 		UpdatedBy          string `json:"updatedBy"`
 		ChargeToMobileGUID string `json:"chargeToMobileGuid"`
 	} `json:"_info"`
+	CustomFields struct {
+		ID               int
+		Caption          string
+		Type             string
+		EntryMethod      string
+		NumberOfDecimals int
+		Value            string
+	}
 }
 
 func (cw *ConnectwiseSite) GetTimeEntryByID(timeEntryID int) *TimeEntry {
