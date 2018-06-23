@@ -180,22 +180,22 @@ type TimeEntryReference struct {
 	}
 }
 
-func GetTicketByID(site *ConnectwiseSite, ticketID int) *Ticket {
+func (cw *ConnectwiseSite) GetTicketByID(ticketID int) *Ticket {
 
-	Url := BuildUrl(site, fmt.Sprintf("/service/tickets/%d", ticketID))
+	Url := cw.BuildUrl(fmt.Sprintf("/service/tickets/%d", ticketID))
 
-	body := GetRequest(site, Url)
+	body := cw.GetRequest(Url)
 	ticket := Ticket{}
 	check(json.Unmarshal(body, &ticket))
 
 	return &ticket
 }
 
-func GetTicketTimeEntriesByID(site *ConnectwiseSite, ticketID int) *[]TimeEntryReference {
+func (cw *ConnectwiseSite) GetTicketTimeEntriesByID(ticketID int) *[]TimeEntryReference {
 
-	Url := BuildUrl(site, fmt.Sprintf("/service/tickets/%d/timeentries", ticketID))
+	Url := cw.BuildUrl(fmt.Sprintf("/service/tickets/%d/timeentries", ticketID))
 
-	body := GetRequest(site, Url)
+	body := cw.GetRequest(Url)
 	timeEntryReference := []TimeEntryReference{}
 	check(json.Unmarshal(body, &timeEntryReference)) //  *[]TimeEntryReference
 

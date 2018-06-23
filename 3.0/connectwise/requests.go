@@ -9,9 +9,9 @@ import (
 	"net/url"
 )
 
-func BuildUrl(site *ConnectwiseSite, restAction string) *url.URL {
+func (cw *ConnectwiseSite) BuildUrl(restAction string) *url.URL {
 	var Url *url.URL
-	Url, err := url.Parse(site.Site)
+	Url, err := url.Parse(cw.Site)
 	check(err)
 	Url.Path += restAction
 
@@ -34,11 +34,11 @@ func getHTTPResponseBody(resp *http.Response) []byte {
 }
 
 //Takes a ConnectwiseSite and request URL, and returns the body of the response
-func GetRequest(site *ConnectwiseSite, Url *url.URL) []byte {
+func (cw *ConnectwiseSite) GetRequest(Url *url.URL) []byte {
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", Url.String(), nil)
 	check(err)
-	req.Header.Set("Authorization", site.Auth)
+	req.Header.Set("Authorization", cw.Auth)
 	req.Header.Set("Content-Type", "application/json")
 	response, err := client.Do(req)
 	check(err)
@@ -48,11 +48,11 @@ func GetRequest(site *ConnectwiseSite, Url *url.URL) []byte {
 }
 
 //Takes a ConnectwiseSite and request URL, and returns the body of the response
-func PostRequest(site *ConnectwiseSite, Url *url.URL, body io.Reader) []byte {
+func (cw *ConnectwiseSite) PostRequest(Url *url.URL, body io.Reader) []byte {
 	client := &http.Client{}
 	req, err := http.NewRequest("POST", Url.String(), body)
 	check(err)
-	req.Header.Set("Authorization", site.Auth)
+	req.Header.Set("Authorization", cw.Auth)
 	req.Header.Set("Content-Type", "application/json")
 	response, err := client.Do(req)
 	check(err)
@@ -62,11 +62,11 @@ func PostRequest(site *ConnectwiseSite, Url *url.URL, body io.Reader) []byte {
 }
 
 //Takes a ConnectwiseSite and request URL, and returns the body of the response
-func DeleteRequest(site *ConnectwiseSite, Url *url.URL) []byte {
+func (cw *ConnectwiseSite) DeleteRequest(Url *url.URL) []byte {
 	client := &http.Client{}
 	req, err := http.NewRequest("DELETE", Url.String(), nil)
 	check(err)
-	req.Header.Set("Authorization", site.Auth)
+	req.Header.Set("Authorization", cw.Auth)
 	req.Header.Set("Content-Type", "application/json")
 	response, err := client.Do(req)
 	check(err)

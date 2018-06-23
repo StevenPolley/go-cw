@@ -145,36 +145,28 @@ type Company struct {
 	} `json:"customFields"`
 }
 
-func GetCompanyByName(site *ConnectwiseSite, companyName string) *[]Company {
+func (cw *ConnectwiseSite) GetCompanyByName(companyName string) *[]Company {
 
 	companies := []Company{}
 
-	//Build the request URL
-	var Url *url.URL
-	Url, err := url.Parse(site.Site)
-	check(err)
-	Url.Path += "/company/companies"
+	Url := cw.BuildUrl("/company/companies")
 	parameters := url.Values{}
 	parameters.Add("conditions", "name=\""+companyName+"\"")
 	Url.RawQuery = parameters.Encode()
 
-	body := GetRequest(site, Url)
+	body := cw.GetRequest(Url)
 	check(json.Unmarshal(body, &companies))
 
 	return &companies
 }
 
-func GetCompanyByID(site *ConnectwiseSite, companyID int) *Company {
+func (cw *ConnectwiseSite) GetCompanyByID(companyID int) *Company {
 
 	company := Company{}
 
-	//Build the request URL
-	var Url *url.URL
-	Url, err := url.Parse(site.Site)
-	check(err)
-	Url.Path += fmt.Sprintf("/company/companies/%d", companyID)
+	Url := cw.BuildUrl(fmt.Sprintf("/company/companies/%d", companyID))
 
-	body := GetRequest(site, Url)
+	body := cw.GetRequest(Url)
 	fmt.Print(string(body))
 	check(json.Unmarshal(body, &company))
 

@@ -17,10 +17,10 @@ type Callback struct {
 	InactiveFlag bool
 }
 
-func GetCallbacks(site *ConnectwiseSite) *[]Callback {
+func (cw *ConnectwiseSite) GetCallbacks() *[]Callback {
 
-	Url := BuildUrl(site, "/system/callbacks")
-	body := GetRequest(site, Url)
+	Url := cw.BuildUrl("/system/callbacks")
+	body := cw.GetRequest(Url)
 
 	callbacks := []Callback{}
 	check(json.Unmarshal(body, &callbacks))
@@ -30,23 +30,22 @@ func GetCallbacks(site *ConnectwiseSite) *[]Callback {
 }
 
 //TBD: This should return something?
-func NewCallback(site *ConnectwiseSite, callback Callback) {
+func (cw *ConnectwiseSite) NewCallback(callback Callback) {
 
-	Url := BuildUrl(site, "/system/callbacks")
+	Url := cw.BuildUrl("/system/callbacks")
 	jsonCallback, err := json.Marshal(callback)
 	check(err)
 
 	jsonBuffer := bytes.NewReader(jsonCallback)
 
-	//body := PostRequest(site, Url, jsonBuffer)
-	PostRequest(site, Url, jsonBuffer)
+	cw.PostRequest(Url, jsonBuffer)
 
 }
 
-func DeleteCallback(site *ConnectwiseSite, callback int) {
+func (cw *ConnectwiseSite) DeleteCallback(callback int) {
 
-	Url := BuildUrl(site, fmt.Sprintf("/system/callbacks/%d", callback))
-	body := DeleteRequest(site, Url)
+	Url := cw.BuildUrl(fmt.Sprintf("/system/callbacks/%d", callback))
+	body := cw.DeleteRequest(Url)
 	fmt.Print(string(body))
 
 }

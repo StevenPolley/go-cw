@@ -113,12 +113,12 @@ type Agreement struct {
 	} `json:"billToSite,omitempty"`
 }
 
-func GetAgreements(site *ConnectwiseSite) *[]Agreement {
+func (cw *ConnectwiseSite) GetAgreements() *[]Agreement {
 
 	//Build the request URL
-	Url := BuildUrl(site, "/finance/agreements")
+	Url := cw.BuildUrl("/finance/agreements")
 
-	body := GetRequest(site, Url)
+	body := cw.GetRequest(Url)
 	agreements := []Agreement{}
 	check(json.Unmarshal(body, &agreements))
 
@@ -126,11 +126,11 @@ func GetAgreements(site *ConnectwiseSite) *[]Agreement {
 
 }
 
-func GetBillingCycles(site *ConnectwiseSite) {
+func (cw *ConnectwiseSite) GetBillingCycles() {
 
-	Url := BuildUrl(site, "/finance/billingCycles")
+	Url := cw.BuildUrl("/finance/billingCycles")
 
-	body := GetRequest(site, Url)
+	body := cw.GetRequest(Url)
 	fmt.Print(string(body))
 	//	check(json.Unmarshal(body, &ticket))
 }
