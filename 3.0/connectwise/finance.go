@@ -3,7 +3,6 @@ package connectwise
 import (
 	"encoding/json"
 	"fmt"
-	"net/url"
 )
 
 type Agreement struct {
