@@ -171,13 +171,12 @@ type Ticket struct {
 	ContactPhoneExtension string `json:"contactPhoneExtension,omitempty"`
 }
 
-//TBD: For some reason the Info struct contained in TimeEntryReference does get data when the JSON is unmarshaled into this struct.  The ID works fine
 type TimeEntryReference struct {
 	ID   int
 	Info struct {
-		Notes    string
-		TimeHref string
-	}
+		Notes    string `json:"notes"`
+		TimeHref string `json:"time_href"`
+	} `json:"_info"`
 }
 
 func (cw *ConnectwiseSite) GetTicketByID(ticketID int) *Ticket {
