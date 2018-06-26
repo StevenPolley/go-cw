@@ -179,6 +179,15 @@ type TimeEntryReference struct {
 	} `json:"_info"`
 }
 
+type ConfigurationReference struct {
+	ID               int    `json:"id"`
+	DeviceIdentifier string `json:"deviceIdentifier"`
+	Info             struct {
+		Name              string `json:"name"`
+		ConfigurationHref string `json:"configuration_href"`
+	} `json:"_info"`
+}
+
 func (cw *ConnectwiseSite) GetTicketByID(ticketID int) *Ticket {
 
 	Url := cw.BuildUrl(fmt.Sprintf("/service/tickets/%d", ticketID))
@@ -199,4 +208,15 @@ func (cw *ConnectwiseSite) GetTicketTimeEntriesByID(ticketID int) *[]TimeEntryRe
 	check(json.Unmarshal(body, &timeEntryReference)) //  *[]TimeEntryReference
 
 	return &timeEntryReference
+}
+
+func (cw *ConnectwiseSite) GetTicketConfigurationsByID(ticketID int) *[]ConfigurationReference {
+
+	Url := cw.BuildUrl(fmt.Sprintf("/service/tickets/%d/configurations", ticketID))
+
+	body := cw.GetRequest(Url)
+	configurationReference := []ConfigurationReference{}
+	check(json.Unmarshal(body, &configurationReference))
+
+	return &configurationReference
 }
