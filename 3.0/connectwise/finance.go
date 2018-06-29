@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+//Agreement is a struct to hold the unmarshaled JSON data when making a call to the Finance API
 type Agreement struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
@@ -113,12 +114,14 @@ type Agreement struct {
 	} `json:"billToSite,omitempty"`
 }
 
+//GetAgreements returns a list of agreements, not paginated and currently not that usefule
+//TBD: Pagination and filtering options still need to be considered
 func (cw *ConnectwiseSite) GetAgreements() *[]Agreement {
 
 	//Build the request URL
-	Url := cw.BuildUrl("/finance/agreements")
+	cwurl := cw.BuildURL("/finance/agreements")
 
-	body := cw.GetRequest(Url)
+	body := cw.GetRequest(cwurl)
 	agreements := []Agreement{}
 	check(json.Unmarshal(body, &agreements))
 
@@ -126,11 +129,13 @@ func (cw *ConnectwiseSite) GetAgreements() *[]Agreement {
 
 }
 
+//GetBillingCycles is not complete
+//TBD: Finish this.
 func (cw *ConnectwiseSite) GetBillingCycles() {
 
-	Url := cw.BuildUrl("/finance/billingCycles")
+	cwurl := cw.BuildURL("/finance/billingCycles")
 
-	body := cw.GetRequest(Url)
+	body := cw.GetRequest(cwurl)
 	fmt.Print(string(body))
 	//	check(json.Unmarshal(body, &ticket))
 }

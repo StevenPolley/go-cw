@@ -85,7 +85,7 @@ type TimeEntry struct {
 
 func (cw *ConnectwiseSite) GetTimeEntryByID(timeEntryID int) *TimeEntry {
 
-	Url := cw.BuildUrl(fmt.Sprintf("/time/entries/%d", timeEntryID))
+	Url := cw.BuildURL(fmt.Sprintf("/time/entries/%d", timeEntryID))
 
 	body := cw.GetRequest(Url)
 	fmt.Print(string(body))

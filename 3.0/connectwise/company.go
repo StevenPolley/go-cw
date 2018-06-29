@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+//Company is a struct to hold the unmarshaled JSON data when making a call to the Company API
 type Company struct {
 	ID         int    `json:"id"`
 	Identifier string `json:"identifier"`
@@ -145,28 +146,32 @@ type Company struct {
 	} `json:"customFields"`
 }
 
+//GetCompanyByName expects an exact match, perhaps an improvement could be made to support wildcard characters.
+//Will return a pointer to a slice of Company's.
 func (cw *ConnectwiseSite) GetCompanyByName(companyName string) *[]Company {
 
 	companies := []Company{}
 
-	Url := cw.BuildUrl("/company/companies")
+	cwurl := cw.BuildURL("/company/companies")
 	parameters := url.Values{}
 	parameters.Add("conditions", "name=\""+companyName+"\"")
-	Url.RawQuery = parameters.Encode()
+	cwurl.RawQuery = parameters.Encode()
 
-	body := cw.GetRequest(Url)
+	body := cw.GetRequest(cwurl)
 	check(json.Unmarshal(body, &companies))
 
 	return &companies
 }
 
+//GetCompanyByID expects the Connectwise Company ID and returns a pointer to a Company
+//Does not return a slice like GetCompanyByName as the ID will only ever have one match
 func (cw *ConnectwiseSite) GetCompanyByID(companyID int) *Company {
 
 	company := Company{}
 
-	Url := cw.BuildUrl(fmt.Sprintf("/company/companies/%d", companyID))
+	cwurl := cw.BuildURL(fmt.Sprintf("/company/companies/%d", companyID))
 
-	body := cw.GetRequest(Url)
+	body := cw.GetRequest(cwurl)
 	fmt.Print(string(body))
 	check(json.Unmarshal(body, &company))
 

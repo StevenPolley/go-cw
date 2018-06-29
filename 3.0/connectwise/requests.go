@@ -9,13 +9,14 @@ import (
 	"net/url"
 )
 
-func (cw *ConnectwiseSite) BuildUrl(restAction string) *url.URL {
-	var Url *url.URL
-	Url, err := url.Parse(cw.Site)
+//BuildURL will take a REST action such as "/companies/company/5" and then append the CW site to it and return a pointer to a url.URL
+func (cw *ConnectwiseSite) BuildURL(restAction string) *url.URL {
+	var cwurl *url.URL
+	cwurl, err := url.Parse(cw.Site)
 	check(err)
-	Url.Path += restAction
+	cwurl.Path += restAction
 
-	return Url
+	return cwurl
 }
 
 //Checks for HTTP errors, and if all looks good, returns the body of the HTTP response as a byte slice
@@ -25,18 +26,18 @@ func getHTTPResponseBody(resp *http.Response) []byte {
 		out := fmt.Sprintf("CW API returned HTTP Status Code %s\n%s", resp.Status, resp.Body)
 		log.Fatal(out)
 		return make([]byte, 0)
-	} else {
-		body, err := ioutil.ReadAll(resp.Body)
-		check(err)
-
-		return body
 	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	check(err)
+
+	return body
 }
 
-//Takes a ConnectwiseSite and request URL, and returns the body of the response
-func (cw *ConnectwiseSite) GetRequest(Url *url.URL) []byte {
+//GetRequest takes a ConnectwiseSite and request URL, and returns the body of the response
+func (cw *ConnectwiseSite) GetRequest(cwurl *url.URL) []byte {
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", Url.String(), nil)
+	req, err := http.NewRequest("GET", cwurl.String(), nil)
 	check(err)
 	req.Header.Set("Authorization", cw.Auth)
 	req.Header.Set("Content-Type", "application/json")
@@ -47,10 +48,10 @@ func (cw *ConnectwiseSite) GetRequest(Url *url.URL) []byte {
 	return getHTTPResponseBody(response)
 }
 
-//Takes a ConnectwiseSite and request URL, and returns the body of the response
-func (cw *ConnectwiseSite) PostRequest(Url *url.URL, body io.Reader) []byte {
+//PostRequest takes a ConnectwiseSite and request URL, and returns the body of the response
+func (cw *ConnectwiseSite) PostRequest(cwurl *url.URL, body io.Reader) []byte {
 	client := &http.Client{}
-	req, err := http.NewRequest("POST", Url.String(), body)
+	req, err := http.NewRequest("POST", cwurl.String(), body)
 	check(err)
 	req.Header.Set("Authorization", cw.Auth)
 	req.Header.Set("Content-Type", "application/json")
@@ -61,10 +62,10 @@ func (cw *ConnectwiseSite) PostRequest(Url *url.URL, body io.Reader) []byte {
 	return getHTTPResponseBody(response)
 }
 
-//Takes a ConnectwiseSite and request URL, and returns the body of the response
-func (cw *ConnectwiseSite) DeleteRequest(Url *url.URL) []byte {
+//DeleteRequest takes a ConnectwiseSite and request URL, and returns the body of the response
+func (cw *ConnectwiseSite) DeleteRequest(cwurl *url.URL) []byte {
 	client := &http.Client{}
-	req, err := http.NewRequest("DELETE", Url.String(), nil)
+	req, err := http.NewRequest("DELETE", cwurl.String(), nil)
 	check(err)
 	req.Header.Set("Authorization", cw.Auth)
 	req.Header.Set("Content-Type", "application/json")

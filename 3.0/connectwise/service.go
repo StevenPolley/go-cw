@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+//Company is a struct to hold the unmarshaled JSON data when making a call to the Service API
 type Ticket struct {
 	ID         int    `json:"id"`
 	Summary    string `json:"summary"`
@@ -171,6 +172,7 @@ type Ticket struct {
 	ContactPhoneExtension string `json:"contactPhoneExtension,omitempty"`
 }
 
+//TimeEntryReference is a struct to hold the unmarshaled JSON data when making a call to the Service API
 //TBD: For some reason the Info struct contained in TimeEntryReference does get data when the JSON is unmarshaled into this struct.  The ID works fine
 type TimeEntryReference struct {
 	ID   int
@@ -180,22 +182,24 @@ type TimeEntryReference struct {
 	}
 }
 
+//GetTicketByID expects a ticket ID and returns a pointer to a Ticket struct
 func (cw *ConnectwiseSite) GetTicketByID(ticketID int) *Ticket {
 
-	Url := cw.BuildUrl(fmt.Sprintf("/service/tickets/%d", ticketID))
+	cwurl := cw.BuildURL(fmt.Sprintf("/service/tickets/%d", ticketID))
 
-	body := cw.GetRequest(Url)
+	body := cw.GetRequest(cwurl)
 	ticket := Ticket{}
 	check(json.Unmarshal(body, &ticket))
 
 	return &ticket
 }
 
+//GetTicketTimeEntriesByID expects a ticket ID and returns a pointer a to a slice of TimeEntryReference's, all the time entries attached to that ticket
 func (cw *ConnectwiseSite) GetTicketTimeEntriesByID(ticketID int) *[]TimeEntryReference {
 
-	Url := cw.BuildUrl(fmt.Sprintf("/service/tickets/%d/timeentries", ticketID))
+	cwurl := cw.BuildURL(fmt.Sprintf("/service/tickets/%d/timeentries", ticketID))
 
-	body := cw.GetRequest(Url)
+	body := cw.GetRequest(cwurl)
 	timeEntryReference := []TimeEntryReference{}
 	check(json.Unmarshal(body, &timeEntryReference)) //  *[]TimeEntryReference
 
