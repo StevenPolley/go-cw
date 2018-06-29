@@ -172,14 +172,26 @@ type Ticket struct {
 	ContactPhoneExtension string `json:"contactPhoneExtension,omitempty"`
 }
 
+<<<<<<< HEAD
 //TimeEntryReference is a struct to hold the unmarshaled JSON data when making a call to the Service API
 //TBD: For some reason the Info struct contained in TimeEntryReference does get data when the JSON is unmarshaled into this struct.  The ID works fine
+=======
+>>>>>>> ab8a24800f1f1789b3aca8e12cc3f8ccfc1ba415
 type TimeEntryReference struct {
 	ID   int
 	Info struct {
-		Notes    string
-		TimeHref string
-	}
+		Notes    string `json:"notes"`
+		TimeHref string `json:"time_href"`
+	} `json:"_info"`
+}
+
+type ConfigurationReference struct {
+	ID               int    `json:"id"`
+	DeviceIdentifier string `json:"deviceIdentifier"`
+	Info             struct {
+		Name              string `json:"name"`
+		ConfigurationHref string `json:"configuration_href"`
+	} `json:"_info"`
 }
 
 //GetTicketByID expects a ticket ID and returns a pointer to a Ticket struct
@@ -204,4 +216,15 @@ func (cw *ConnectwiseSite) GetTicketTimeEntriesByID(ticketID int) *[]TimeEntryRe
 	check(json.Unmarshal(body, &timeEntryReference)) //  *[]TimeEntryReference
 
 	return &timeEntryReference
+}
+
+func (cw *ConnectwiseSite) GetTicketConfigurationsByID(ticketID int) *[]ConfigurationReference {
+
+	Url := cw.BuildUrl(fmt.Sprintf("/service/tickets/%d/configurations", ticketID))
+
+	body := cw.GetRequest(Url)
+	configurationReference := []ConfigurationReference{}
+	check(json.Unmarshal(body, &configurationReference))
+
+	return &configurationReference
 }

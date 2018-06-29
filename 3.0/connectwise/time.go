@@ -73,7 +73,7 @@ type TimeEntry struct {
 		UpdatedBy          string `json:"updatedBy"`
 		ChargeToMobileGUID string `json:"chargeToMobileGuid"`
 	} `json:"_info"`
-	CustomFields struct {
+	CustomFields []struct {
 		ID               int
 		Caption          string
 		Type             string
