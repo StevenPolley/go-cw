@@ -150,14 +150,13 @@ type Company struct {
 //Will return a pointer to a slice of Company's.
 func (cw *ConnectwiseSite) GetCompanyByName(companyName string) *[]Company {
 
-	companies := []Company{}
-
 	cwurl := cw.BuildURL("/company/companies")
 	parameters := url.Values{}
 	parameters.Add("conditions", "name=\""+companyName+"\"")
 	cwurl.RawQuery = parameters.Encode()
 
 	body := cw.GetRequest(cwurl)
+	companies := []Company{}
 	check(json.Unmarshal(body, &companies))
 
 	return &companies

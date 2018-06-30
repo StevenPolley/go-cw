@@ -3,6 +3,7 @@ package connectwise
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
 )
 
 //Agreement is a struct to hold the unmarshaled JSON data when making a call to the Finance API
@@ -127,6 +128,20 @@ func (cw *ConnectwiseSite) GetAgreements() *[]Agreement {
 
 	return &agreements
 
+}
+
+func (cw *ConnectwiseSite) GetAgreementsByCompanyName(companyName string) *[]Agreement {
+
+	cwurl := cw.BuildURL("/finance/agreements")
+	parameters := url.Values{}
+	parameters.Add("conditions", "company/name=\""+companyName+"\"")
+	cwurl.RawQuery = parameters.Encode()
+
+	body := cw.GetRequest(cwurl)
+	agreements := []Agreement{}
+	check(json.Unmarshal(body, &agreements))
+
+	return &agreements
 }
 
 //GetBillingCycles is not complete
