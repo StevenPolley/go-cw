@@ -5,7 +5,7 @@ Note: This is far from complete, I'm simply adding structs and methods as I have
 
 #Installation
 ```
-go get github.com/StevenPolley/go-cw
+go get deadbeef.codes/steven/go-cw
 ```
 
 #Usage
@@ -13,7 +13,7 @@ go get github.com/StevenPolley/go-cw
 package main
 
 import (
-	"github.com/StevenPolley/go-cw/3.0/connectwise"
+	"deadbeef.codes/steven/go-cw/3.0/connectwise"
 	"fmt"
 )
 
