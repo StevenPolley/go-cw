@@ -8,6 +8,44 @@ import (
 	"net/url"
 )
 
+//Request is a struct which holds all information that is collected in order to make a request
+type Request struct {
+	CW         *ConnectwiseSite
+	RestAction string
+	Parameters map[string]string
+	Method     string //GET, POST, DELETE, etc
+	Body       []byte //In a GET request, this is an instance of the struct that the expected json data is to be unmarshaled into
+}
+
+func NewRequest(cw *ConnectwiseSite, restAction, method string, body []byte) *Request {
+	req := Request{CW: cw, RestAction: restAction, Method: method, Body: body}
+	return &req
+}
+
+func (req *Request) Do() error {
+	cwurl, err := req.CW.BuildURL(req.RestAction)
+	if err != nil {
+		return fmt.Errorf("could not build url %s: %s", req.RestAction, err)
+	}
+
+	if len(req.Parameters) > 0 {
+		parameters := url.Values{}
+		for key, value := range req.Parameters {
+			parameters.Add(key, value)
+		}
+		cwurl.RawQuery = parameters.Encode()
+	}
+
+	///////
+	req.Body, err = req.CW.GetRequest(cwurl)
+	if err != nil {
+		return fmt.Errorf("get request failed: %s", err)
+	}
+
+	return nil
+
+}
+
 //BuildURL will take a REST action such as "/companies/company/5" and then append the CW site to it and return a pointer to a url.URL
 func (cw *ConnectwiseSite) BuildURL(restAction string) (*url.URL, error) {
 	var cwurl *url.URL
