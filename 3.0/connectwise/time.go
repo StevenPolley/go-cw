@@ -87,18 +87,18 @@ func (cw *ConnectwiseSite) GetTimeEntryByID(timeEntryID int) (*TimeEntry, error)
 	restAction := fmt.Sprintf("/time/entries/%d", timeEntryID)
 	cwurl, err := cw.BuildURL(restAction)
 	if err != nil {
-		return nil, fmt.Errorf("could not build url %s: %g", restAction, err)
+		return nil, fmt.Errorf("could not build url %s: %s", restAction, err)
 	}
 
 	body, err := cw.GetRequest(cwurl)
 	if err != nil {
-		return nil, fmt.Errorf("could not get request %s: %g", cwurl, err)
+		return nil, fmt.Errorf("could not get request %s: %s", cwurl, err)
 	}
 
 	timeEntry := TimeEntry{}
 	err = json.Unmarshal(body, &timeEntry)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal body into struct: %g", err)
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
 	}
 
 	return &timeEntry, nil

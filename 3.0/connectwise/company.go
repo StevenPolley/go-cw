@@ -152,7 +152,7 @@ func (cw *ConnectwiseSite) GetCompanyByName(companyName string) (*[]Company, err
 	restAction := "/company/companies"
 	cwurl, err := cw.BuildURL(restAction)
 	if err != nil {
-		return nil, fmt.Errorf("could not build url %s: %g", restAction, err)
+		return nil, fmt.Errorf("could not build url %s: %s", restAction, err)
 	}
 
 	parameters := url.Values{}
@@ -161,12 +161,12 @@ func (cw *ConnectwiseSite) GetCompanyByName(companyName string) (*[]Company, err
 
 	body, err := cw.GetRequest(cwurl)
 	if err != nil {
-		return nil, fmt.Errorf("could not get request %s: %g", cwurl, err)
+		return nil, fmt.Errorf("could not get request %s: %s", cwurl, err)
 	}
 	companies := []Company{}
 	err = json.Unmarshal(body, &companies)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal body into struct: %g", err)
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
 	}
 
 	return &companies, nil
@@ -178,18 +178,18 @@ func (cw *ConnectwiseSite) GetCompanyByID(companyID int) (*Company, error) {
 	restAction := fmt.Sprintf("/company/companies/%d", companyID)
 	cwurl, err := cw.BuildURL(restAction)
 	if err != nil {
-		return nil, fmt.Errorf("could not build url %s: %g", restAction, err)
+		return nil, fmt.Errorf("could not build url %s: %s", restAction, err)
 	}
 
 	body, err := cw.GetRequest(cwurl)
 	if err != nil {
-		return nil, fmt.Errorf("could not get request %s: %g", cwurl, err)
+		return nil, fmt.Errorf("could not get request %s: %s", cwurl, err)
 	}
 
 	company := Company{}
 	err = json.Unmarshal(body, &company)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal body into struct: %g", err)
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
 	}
 
 	return &company, nil

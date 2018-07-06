@@ -196,17 +196,17 @@ func (cw *ConnectwiseSite) GetTicketByID(ticketID int) (*Ticket, error) {
 	restAction := fmt.Sprintf("/service/tickets/%d", ticketID)
 	cwurl, err := cw.BuildURL(restAction)
 	if err != nil {
-		return nil, fmt.Errorf("could not build url %s: %g", restAction, err)
+		return nil, fmt.Errorf("could not build url %s: %s", restAction, err)
 	}
 
 	body, err := cw.GetRequest(cwurl)
 	if err != nil {
-		return nil, fmt.Errorf("could not get request %s: %g", cwurl, err)
+		return nil, fmt.Errorf("could not get request %s: %s", cwurl, err)
 	}
 	ticket := Ticket{}
 	err = json.Unmarshal(body, &ticket)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal body into struct: %g", err)
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
 	}
 
 	return &ticket, nil
@@ -217,17 +217,17 @@ func (cw *ConnectwiseSite) GetTicketTimeEntriesByID(ticketID int) (*[]TimeEntryR
 	restAction := fmt.Sprintf("/service/tickets/%d/timeentries", ticketID)
 	cwurl, err := cw.BuildURL(restAction)
 	if err != nil {
-		return nil, fmt.Errorf("could not build url %s: %g", restAction, err)
+		return nil, fmt.Errorf("could not build url %s: %s", restAction, err)
 	}
 
 	body, err := cw.GetRequest(cwurl)
 	if err != nil {
-		return nil, fmt.Errorf("could not get request %s: %g", cwurl, err)
+		return nil, fmt.Errorf("could not get request %s: %s", cwurl, err)
 	}
 	timeEntryReference := []TimeEntryReference{}
 	err = json.Unmarshal(body, &timeEntryReference)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal body into struct: %g", err)
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
 	}
 
 	return &timeEntryReference, nil
@@ -237,17 +237,17 @@ func (cw *ConnectwiseSite) GetTicketConfigurationsByID(ticketID int) (*[]Configu
 	restAction := fmt.Sprintf("/service/tickets/%d/configurations", ticketID)
 	cwurl, err := cw.BuildURL(restAction)
 	if err != nil {
-		return nil, fmt.Errorf("could not build url %s: %g", restAction, err)
+		return nil, fmt.Errorf("could not build url %s: %s", restAction, err)
 	}
 
 	body, err := cw.GetRequest(cwurl)
 	if err != nil {
-		return nil, fmt.Errorf("could not get request %s: %g", cwurl, err)
+		return nil, fmt.Errorf("could not get request %s: %s", cwurl, err)
 	}
 	configurationReference := []ConfigurationReference{}
 	err = json.Unmarshal(body, &configurationReference)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal body into struct: %g", err)
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
 	}
 
 	return &configurationReference, nil

@@ -13,7 +13,7 @@ func (cw *ConnectwiseSite) BuildURL(restAction string) (*url.URL, error) {
 	var cwurl *url.URL
 	cwurl, err := url.Parse(cw.Site)
 	if err != nil {
-		return nil, fmt.Errorf("could not %s as url: %g", cw.Site, err)
+		return nil, fmt.Errorf("could not %s as url: %s", cw.Site, err)
 	}
 	cwurl.Path += restAction
 
@@ -24,7 +24,7 @@ func (cw *ConnectwiseSite) BuildURL(restAction string) (*url.URL, error) {
 //TBD: Needs to accept 201 and 204 (returned for Create and Delete operations)
 func getHTTPResponseBody(resp *http.Response) ([]byte, error) {
 	if (resp.StatusCode != http.StatusOK) && (resp.StatusCode != http.StatusCreated) && (resp.StatusCode != http.StatusNoContent) {
-		return nil, fmt.Errorf("cw api returned unexpected http status %i - %s", resp.StatusCode, resp.Status)
+		return nil, fmt.Errorf("cw api returned unexpected http status %d - %s", resp.StatusCode, resp.Status)
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
@@ -40,18 +40,18 @@ func (cw *ConnectwiseSite) GetRequest(cwurl *url.URL) ([]byte, error) {
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", cwurl.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("could not construct http request: %g", err)
+		return nil, fmt.Errorf("could not construct http request: %s", err)
 	}
 	req.Header.Set("Authorization", cw.Auth)
 	req.Header.Set("Content-Type", "application/json")
 	response, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("could not perform http get request: %g", err)
+		return nil, fmt.Errorf("could not perform http get request: %s", err)
 	}
 
 	body, err := getHTTPResponseBody(response)
 	if err != nil {
-		return nil, fmt.Errorf("could not get http response body: %g", err)
+		return nil, fmt.Errorf("could not get http response body: %s", err)
 	}
 
 	return body, nil
@@ -62,18 +62,18 @@ func (cw *ConnectwiseSite) PostRequest(cwurl *url.URL, reqBody io.Reader) ([]byt
 	client := &http.Client{}
 	req, err := http.NewRequest("POST", cwurl.String(), reqBody)
 	if err != nil {
-		return nil, fmt.Errorf("could not construct http request: %g", err)
+		return nil, fmt.Errorf("could not construct http request: %s", err)
 	}
 	req.Header.Set("Authorization", cw.Auth)
 	req.Header.Set("Content-Type", "application/json")
 	response, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("could not perform http post request: %g", err)
+		return nil, fmt.Errorf("could not perform http post request: %s", err)
 	}
 
 	body, err := getHTTPResponseBody(response)
 	if err != nil {
-		return nil, fmt.Errorf("could not get http response body: %g", err)
+		return nil, fmt.Errorf("could not get http response body: %s", err)
 	}
 
 	return body, nil
@@ -84,18 +84,18 @@ func (cw *ConnectwiseSite) DeleteRequest(cwurl *url.URL) ([]byte, error) {
 	client := &http.Client{}
 	req, err := http.NewRequest("DELETE", cwurl.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("could not construct http request: %g", err)
+		return nil, fmt.Errorf("could not construct http request: %s", err)
 	}
 	req.Header.Set("Authorization", cw.Auth)
 	req.Header.Set("Content-Type", "application/json")
 	response, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("could not perform http delete request: %g", err)
+		return nil, fmt.Errorf("could not perform http delete request: %s", err)
 	}
 
 	body, err := getHTTPResponseBody(response)
 	if err != nil {
-		return nil, fmt.Errorf("could not get http response body: %g", err)
+		return nil, fmt.Errorf("could not get http response body: %s", err)
 	}
 
 	return body, nil
