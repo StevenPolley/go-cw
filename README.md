@@ -3,12 +3,12 @@ Go structs and methods for the ConnectWise REST API
 
 Note: This is far from complete, I'm simply adding structs and methods as I have an actual requirement for them. If you add to this, please feel free to send a pull request.
 
-#Installation
+# Installation
 ```
 go get deadbeef.codes/steven/go-cw
 ```
 
-#Usage
+# Usage
 ```
 package main
 
