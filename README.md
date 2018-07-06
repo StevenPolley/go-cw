@@ -13,20 +13,34 @@ go get deadbeef.codes/steven/go-cw
 package main
 
 import (
-	"deadbeef.codes/steven/go-cw/3.0/connectwise"
 	"fmt"
+	"log"
+	"os"
+
+	"deadbeef.codes/steven/go-cw/3.0/connectwise"
 )
 
-const (
-	cwSite		= "https://yourconnectwisesite.com/v4_6_release/apis/3.0"
-	cwAPIKeyPrivate = "ASDLFK4ah89ad" //Put in either your private API key or account password if using user impersonation
-	cwAPIKey	= "ASLDFKJ2342kl" //Put in either your public API key or account username if using user impersonation
-	cwCompany	= "yourcompanyname" //The connectwise company name
-)
+var cw *connectwise.ConnectwiseSite
+
+func init() {
+	publicKey := os.Getenv("gocwpublickey")
+	privateKey := os.Getenv("gocwprivatekey")
+	site := os.Getenv("gocwsite")
+	company := os.Getenv("gocwcompany")
+
+	cw = connectwise.NewSite(site, publicKey, privateKey, company)
+}
 
 func main() {
-	cw := connectwise.NewSite(cwSite, cwAPIKey, cwAPIKeyPrivate, cwCompany)
-	companyDataByID := cw.GetCompanyByID(2) //Retrieves company ID 2 from CW and returns type pointer a Company
-	fmt.Println(*companyDataByID.Name)
+
+	co, err := cw.GetCompanyByID(2)
+	if err != nil {
+		log.Fatal("could not get company 2: %g", err)
+	}
+
+	//Refer to the Connectwise API documentation to see what fields are available
+	fmt.Println(co.Name)
+	fmt.Println(co.DefaultContact.Name)
 }
+
 ```
