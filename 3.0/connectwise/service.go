@@ -192,36 +192,63 @@ type ConfigurationReference struct {
 }
 
 //GetTicketByID expects a ticket ID and returns a pointer to a Ticket struct
-func (cw *ConnectwiseSite) GetTicketByID(ticketID int) *Ticket {
+func (cw *ConnectwiseSite) GetTicketByID(ticketID int) (*Ticket, error) {
+	restAction := fmt.Sprintf("/service/tickets/%d", ticketID)
+	cwurl, err := cw.BuildURL(restAction)
+	if err != nil {
+		return nil, fmt.Errorf("could not build url %s: %g", restAction, err)
+	}
 
-	cwurl := cw.BuildURL(fmt.Sprintf("/service/tickets/%d", ticketID))
-
-	body := cw.GetRequest(cwurl)
+	body, err := cw.GetRequest(cwurl)
+	if err != nil {
+		return nil, fmt.Errorf("could not get request %s: %g", cwurl, err)
+	}
 	ticket := Ticket{}
-	check(json.Unmarshal(body, &ticket))
+	err = json.Unmarshal(body, &ticket)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %g", err)
+	}
 
-	return &ticket
+	return &ticket, nil
 }
 
 //GetTicketTimeEntriesByID expects a ticket ID and returns a pointer a to a slice of TimeEntryReference's, all the time entries attached to that ticket
-func (cw *ConnectwiseSite) GetTicketTimeEntriesByID(ticketID int) *[]TimeEntryReference {
+func (cw *ConnectwiseSite) GetTicketTimeEntriesByID(ticketID int) (*[]TimeEntryReference, error) {
+	restAction := fmt.Sprintf("/service/tickets/%d/timeentries", ticketID)
+	cwurl, err := cw.BuildURL(restAction)
+	if err != nil {
+		return nil, fmt.Errorf("could not build url %s: %g", restAction, err)
+	}
 
-	cwurl := cw.BuildURL(fmt.Sprintf("/service/tickets/%d/timeentries", ticketID))
-
-	body := cw.GetRequest(cwurl)
+	body, err := cw.GetRequest(cwurl)
+	if err != nil {
+		return nil, fmt.Errorf("could not get request %s: %g", cwurl, err)
+	}
 	timeEntryReference := []TimeEntryReference{}
-	check(json.Unmarshal(body, &timeEntryReference)) //  *[]TimeEntryReference
+	err = json.Unmarshal(body, &timeEntryReference)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %g", err)
+	}
 
-	return &timeEntryReference
+	return &timeEntryReference, nil
 }
 
-func (cw *ConnectwiseSite) GetTicketConfigurationsByID(ticketID int) *[]ConfigurationReference {
+func (cw *ConnectwiseSite) GetTicketConfigurationsByID(ticketID int) (*[]ConfigurationReference, error) {
+	restAction := fmt.Sprintf("/service/tickets/%d/configurations", ticketID)
+	cwurl, err := cw.BuildURL(restAction)
+	if err != nil {
+		return nil, fmt.Errorf("could not build url %s: %g", restAction, err)
+	}
 
-	cwurl := cw.BuildURL(fmt.Sprintf("/service/tickets/%d/configurations", ticketID))
-
-	body := cw.GetRequest(cwurl)
+	body, err := cw.GetRequest(cwurl)
+	if err != nil {
+		return nil, fmt.Errorf("could not get request %s: %g", cwurl, err)
+	}
 	configurationReference := []ConfigurationReference{}
-	check(json.Unmarshal(body, &configurationReference))
+	err = json.Unmarshal(body, &configurationReference)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %g", err)
+	}
 
-	return &configurationReference
+	return &configurationReference, nil
 }

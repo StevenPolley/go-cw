@@ -3,19 +3,12 @@ package connectwise
 import (
 	"encoding/base64"
 	"fmt"
-	"log"
 )
 
 //ConnectwiseSite is a stuct containing the URL of the site and the API authorization token in the format that CW expects it.
 type ConnectwiseSite struct {
 	Site string
 	Auth string
-}
-
-func check(err error) {
-	if err != nil {
-		log.Fatal(err)
-	}
 }
 
 //NewSite returns a pointer to a ConnectwiseSite struct with the site and auth string available for use in API requests

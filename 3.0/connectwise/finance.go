@@ -115,42 +115,70 @@ type Agreement struct {
 	} `json:"billToSite,omitempty"`
 }
 
-//GetAgreements returns a list of agreements, not paginated and currently not that usefule
+//GetAgreements returns a list of agreements, not paginated and currently not that useful
 //TBD: Pagination and filtering options still need to be considered
-func (cw *ConnectwiseSite) GetAgreements() *[]Agreement {
+func (cw *ConnectwiseSite) GetAgreements() (*[]Agreement, error) {
+	restAction := "/finance/agreements"
+	cwurl, err := cw.BuildURL(restAction)
+	if err != nil {
+		return nil, fmt.Errorf("could not build url %s: %g", restAction, err)
+	}
 
-	//Build the request URL
-	cwurl := cw.BuildURL("/finance/agreements")
-
-	body := cw.GetRequest(cwurl)
+	body, err := cw.GetRequest(cwurl)
+	if err != nil {
+		return nil, fmt.Errorf("could not get request %s: %g", cwurl, err)
+	}
 	agreements := []Agreement{}
-	check(json.Unmarshal(body, &agreements))
+	err = json.Unmarshal(body, &agreements)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %g", err)
+	}
 
-	return &agreements
+	return &agreements, nil
 
 }
 
-func (cw *ConnectwiseSite) GetAgreementsByCompanyName(companyName string) *[]Agreement {
+//GetAgreementsByCompanyName returns a list of agreements that belong to an exact matching company name
+//TBD: Pagination and filtering options still need to be considered
+func (cw *ConnectwiseSite) GetAgreementsByCompanyName(companyName string) (*[]Agreement, error) {
+	restAction := "/finance/agreements"
+	cwurl, err := cw.BuildURL(restAction)
+	if err != nil {
+		return nil, fmt.Errorf("could not build url %s: %g", restAction, err)
+	}
 
-	cwurl := cw.BuildURL("/finance/agreements")
 	parameters := url.Values{}
 	parameters.Add("conditions", "company/name=\""+companyName+"\"")
 	cwurl.RawQuery = parameters.Encode()
 
-	body := cw.GetRequest(cwurl)
+	body, err := cw.GetRequest(cwurl)
+	if err != nil {
+		return nil, fmt.Errorf("could not get request %s: %g", cwurl, err)
+	}
 	agreements := []Agreement{}
-	check(json.Unmarshal(body, &agreements))
+	err = json.Unmarshal(body, &agreements)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %g", err)
+	}
 
-	return &agreements
+	return &agreements, nil
 }
 
 //GetBillingCycles is not complete
 //TBD: Finish this.
+/*
 func (cw *ConnectwiseSite) GetBillingCycles() {
+	restAction := "/finance/billingCycles"
+	cwurl, err := cw.BuildURL(restAction)
+	if err != nil {
+		return nil, fmt.Errorf("could not build url %s: %g", restAction, err)
+	}
 
-	cwurl := cw.BuildURL("/finance/billingCycles")
-
-	body := cw.GetRequest(cwurl)
+	body, err := cw.GetRequest(cwurl)
+	if err != nil {
+		return nil, fmt.Errorf("could not get request %s: %g", cwurl, err)
+	}
 	fmt.Print(string(body))
 	//	check(json.Unmarshal(body, &ticket))
 }
+*/

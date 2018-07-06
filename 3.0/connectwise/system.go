@@ -17,35 +17,61 @@ type Callback struct {
 	InactiveFlag bool
 }
 
-func (cw *ConnectwiseSite) GetCallbacks() *[]Callback {
+func (cw *ConnectwiseSite) GetCallbacks() (*[]Callback, error) {
+	restAction := "/system/callbacks"
+	cwurl, err := cw.BuildURL(restAction)
+	if err != nil {
+		return nil, fmt.Errorf("could not build url %s: %g", restAction, err)
+	}
 
-	URL := cw.BuildURL("/system/callbacks")
-	body := cw.GetRequest(URL)
-
+	body, err := cw.GetRequest(cwurl)
+	if err != nil {
+		return nil, fmt.Errorf("could not get request %s: %g", cwurl, err)
+	}
 	callbacks := []Callback{}
-	check(json.Unmarshal(body, &callbacks))
+	err = json.Unmarshal(body, &callbacks)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %g", err)
+	}
 
-	return &callbacks
+	return &callbacks, nil
 
 }
 
-//TBD: This should return something?
-func (cw *ConnectwiseSite) NewCallback(callback Callback) {
+//TBD: This should return something useful, response body??
+func (cw *ConnectwiseSite) NewCallback(callback Callback) error {
+	restAction := "/system/callbacks"
+	cwurl, err := cw.BuildURL(restAction)
+	if err != nil {
+		return fmt.Errorf("could not build url %s: %g", restAction, err)
+	}
 
-	URL := cw.BuildURL("/system/callbacks")
 	jsonCallback, err := json.Marshal(callback)
-	check(err)
+	if err != nil {
+		return fmt.Errorf("could not marshal json data: %g", err)
+	}
 
 	jsonBuffer := bytes.NewReader(jsonCallback)
 
-	cw.PostRequest(URL, jsonBuffer)
+	_, err = cw.PostRequest(cwurl, jsonBuffer)
+	if err != nil {
+		return fmt.Errorf("could not post request %s: %g", cwurl, err)
+	}
 
+	return nil
 }
 
-func (cw *ConnectwiseSite) DeleteCallback(callback int) {
+//TBD: This should return something useful, response body??
+func (cw *ConnectwiseSite) DeleteCallback(callback int) error {
+	restAction := fmt.Sprintf("/system/callbacks/%d", callback)
+	cwurl, err := cw.BuildURL(restAction)
+	if err != nil {
+		return fmt.Errorf("could not build url %s: %g", restAction, err)
+	}
+	_, err = cw.DeleteRequest(cwurl)
+	if err != nil {
+		return fmt.Errorf("could not delete request %s: %g", cwurl, err)
+	}
 
-	URL := cw.BuildURL(fmt.Sprintf("/system/callbacks/%d", callback))
-	body := cw.DeleteRequest(URL)
-	fmt.Print(string(body))
-
+	return nil
 }

@@ -83,15 +83,23 @@ type TimeEntry struct {
 	}
 }
 
-func (cw *ConnectwiseSite) GetTimeEntryByID(timeEntryID int) *TimeEntry {
+func (cw *ConnectwiseSite) GetTimeEntryByID(timeEntryID int) (*TimeEntry, error) {
+	restAction := fmt.Sprintf("/time/entries/%d", timeEntryID)
+	cwurl, err := cw.BuildURL(restAction)
+	if err != nil {
+		return nil, fmt.Errorf("could not build url %s: %g", restAction, err)
+	}
 
-	Url := cw.BuildURL(fmt.Sprintf("/time/entries/%d", timeEntryID))
-
-	body := cw.GetRequest(Url)
-	fmt.Print(string(body))
+	body, err := cw.GetRequest(cwurl)
+	if err != nil {
+		return nil, fmt.Errorf("could not get request %s: %g", cwurl, err)
+	}
 
 	timeEntry := TimeEntry{}
-	check(json.Unmarshal(body, &timeEntry))
+	err = json.Unmarshal(body, &timeEntry)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %g", err)
+	}
 
-	return &timeEntry
+	return &timeEntry, nil
 }

@@ -148,31 +148,49 @@ type Company struct {
 
 //GetCompanyByName expects an exact match, perhaps an improvement could be made to support wildcard characters.
 //Will return a pointer to a slice of Company's.
-func (cw *ConnectwiseSite) GetCompanyByName(companyName string) *[]Company {
+func (cw *ConnectwiseSite) GetCompanyByName(companyName string) (*[]Company, error) {
+	restAction := "/company/companies"
+	cwurl, err := cw.BuildURL(restAction)
+	if err != nil {
+		return nil, fmt.Errorf("could not build url %s: %g", restAction, err)
+	}
 
-	cwurl := cw.BuildURL("/company/companies")
 	parameters := url.Values{}
 	parameters.Add("conditions", "name=\""+companyName+"\"")
 	cwurl.RawQuery = parameters.Encode()
 
-	body := cw.GetRequest(cwurl)
+	body, err := cw.GetRequest(cwurl)
+	if err != nil {
+		return nil, fmt.Errorf("could not get request %s: %g", cwurl, err)
+	}
 	companies := []Company{}
-	check(json.Unmarshal(body, &companies))
+	err = json.Unmarshal(body, &companies)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %g", err)
+	}
 
-	return &companies
+	return &companies, nil
 }
 
 //GetCompanyByID expects the Connectwise Company ID and returns a pointer to a Company
 //Does not return a slice like GetCompanyByName as the ID will only ever have one match
-func (cw *ConnectwiseSite) GetCompanyByID(companyID int) *Company {
+func (cw *ConnectwiseSite) GetCompanyByID(companyID int) (*Company, error) {
+	restAction := fmt.Sprintf("/company/companies/%d", companyID)
+	cwurl, err := cw.BuildURL(restAction)
+	if err != nil {
+		return nil, fmt.Errorf("could not build url %s: %g", restAction, err)
+	}
+
+	body, err := cw.GetRequest(cwurl)
+	if err != nil {
+		return nil, fmt.Errorf("could not get request %s: %g", cwurl, err)
+	}
 
 	company := Company{}
+	err = json.Unmarshal(body, &company)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %g", err)
+	}
 
-	cwurl := cw.BuildURL(fmt.Sprintf("/company/companies/%d", companyID))
-
-	body := cw.GetRequest(cwurl)
-	fmt.Print(string(body))
-	check(json.Unmarshal(body, &company))
-
-	return &company
+	return &company, nil
 }
