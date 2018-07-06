@@ -9,7 +9,7 @@ import (
 type Callback struct {
 	ID           int
 	Description  string
-	Url          string
+	URL          string
 	ObjectId     int
 	Type         string
 	Level        string
@@ -19,8 +19,8 @@ type Callback struct {
 
 func (cw *ConnectwiseSite) GetCallbacks() *[]Callback {
 
-	Url := cw.BuildURL("/system/callbacks")
-	body := cw.GetRequest(Url)
+	URL := cw.BuildURL("/system/callbacks")
+	body := cw.GetRequest(URL)
 
 	callbacks := []Callback{}
 	check(json.Unmarshal(body, &callbacks))
@@ -32,20 +32,20 @@ func (cw *ConnectwiseSite) GetCallbacks() *[]Callback {
 //TBD: This should return something?
 func (cw *ConnectwiseSite) NewCallback(callback Callback) {
 
-	Url := cw.BuildURL("/system/callbacks")
+	URL := cw.BuildURL("/system/callbacks")
 	jsonCallback, err := json.Marshal(callback)
 	check(err)
 
 	jsonBuffer := bytes.NewReader(jsonCallback)
 
-	cw.PostRequest(Url, jsonBuffer)
+	cw.PostRequest(URL, jsonBuffer)
 
 }
 
 func (cw *ConnectwiseSite) DeleteCallback(callback int) {
 
-	Url := cw.BuildURL(fmt.Sprintf("/system/callbacks/%d", callback))
-	body := cw.DeleteRequest(Url)
+	URL := cw.BuildURL(fmt.Sprintf("/system/callbacks/%d", callback))
+	body := cw.DeleteRequest(URL)
 	fmt.Print(string(body))
 
 }
