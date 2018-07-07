@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-//Company is a struct to hold the unmarshaled JSON data when making a call to the Service API
+//Ticket is a struct to hold the unmarshaled JSON data when making a call to the Service API
 type Ticket struct {
 	ID         int    `json:"id"`
 	Summary    string `json:"summary"`
@@ -182,6 +182,8 @@ type TimeEntryReference struct {
 	} `json:"_info"`
 }
 
+//ConfigurationReference is a struct to hold a reference to Configuration data in the Connectwise API
+//TBD: Do these "reference" types really need to be exported???
 type ConfigurationReference struct {
 	ID               int    `json:"id"`
 	DeviceIdentifier string `json:"deviceIdentifier"`
@@ -233,6 +235,7 @@ func (cw *ConnectwiseSite) GetTicketTimeEntriesByID(ticketID int) (*[]TimeEntryR
 	return &timeEntryReference, nil
 }
 
+//GetTicketConfigurationsByID expects a ticket ID and returns a pointer to a slice of the configurations attached to the ticket
 func (cw *ConnectwiseSite) GetTicketConfigurationsByID(ticketID int) (*[]ConfigurationReference, error) {
 	restAction := fmt.Sprintf("/service/tickets/%d/configurations", ticketID)
 	cwurl, err := cw.BuildURL(restAction)

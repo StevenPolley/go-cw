@@ -6,17 +6,20 @@ import (
 	"fmt"
 )
 
+//Callback is a struct to hold the unmarshaled JSON data when making a call to the System API
+//TBD: struct tags
 type Callback struct {
 	ID           int
 	Description  string
 	URL          string
-	ObjectId     int
+	ObjectID     int
 	Type         string
 	Level        string
-	MemberId     int
+	MemberID     int
 	InactiveFlag bool
 }
 
+//GetCallbacks returns a slice of Callback structs containing all the callbacks currently registered with ConnectWise
 func (cw *ConnectwiseSite) GetCallbacks() (*[]Callback, error) {
 	restAction := "/system/callbacks"
 	cwurl, err := cw.BuildURL(restAction)
@@ -38,6 +41,7 @@ func (cw *ConnectwiseSite) GetCallbacks() (*[]Callback, error) {
 
 }
 
+//NewCallback expects a Callback struct and will register a new callback with Connectwise
 //TBD: This should return something useful, response body??
 func (cw *ConnectwiseSite) NewCallback(callback Callback) error {
 	restAction := "/system/callbacks"
@@ -61,6 +65,7 @@ func (cw *ConnectwiseSite) NewCallback(callback Callback) error {
 	return nil
 }
 
+//DeleteCallback expects the ID of an existing callback and will unregister it with ConnectWise
 //TBD: This should return something useful, response body??
 func (cw *ConnectwiseSite) DeleteCallback(callback int) error {
 	restAction := fmt.Sprintf("/system/callbacks/%d", callback)

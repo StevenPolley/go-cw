@@ -146,6 +146,16 @@ type Company struct {
 	} `json:"customFields"`
 }
 
+//Unmarshal is a method which exists for each struct for data returned by or posted to the ConnectWise API
+//It is responsible for Unmarshaling the JSON data into the struct
+func (co *Company) Unmarshal(data *[]byte) error {
+	err := json.Unmarshal(*data, co)
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal data into company struct: %s", err)
+	}
+	return nil
+}
+
 //GetCompanyByName expects an exact match, perhaps an improvement could be made to support wildcard characters.
 //Will return a pointer to a slice of Company's.
 func (cw *ConnectwiseSite) GetCompanyByName(companyName string) (*[]Company, error) {
@@ -175,22 +185,17 @@ func (cw *ConnectwiseSite) GetCompanyByName(companyName string) (*[]Company, err
 //GetCompanyByID expects the Connectwise Company ID and returns a pointer to a Company
 //Does not return a slice like GetCompanyByName as the ID will only ever have one match
 func (cw *ConnectwiseSite) GetCompanyByID(companyID int) (*Company, error) {
-	restAction := fmt.Sprintf("/company/companies/%d", companyID)
-	cwurl, err := cw.BuildURL(restAction)
+	req := NewRequest(cw, fmt.Sprintf("/company/companies/%d", companyID), "GET", nil)
+	err := req.Do()
 	if err != nil {
-		return nil, fmt.Errorf("could not build url %s: %s", restAction, err)
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
 	}
 
-	body, err := cw.GetRequest(cwurl)
-	if err != nil {
-		return nil, fmt.Errorf("could not get request %s: %s", cwurl, err)
-	}
-
-	company := Company{}
-	err = json.Unmarshal(body, &company)
+	co := &Company{}
+	err = co.Unmarshal(&req.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
 	}
 
-	return &company, nil
+	return co, nil
 }

@@ -1,6 +1,7 @@
 package connectwise
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -17,11 +18,13 @@ type Request struct {
 	Body       []byte //In a GET request, this is an instance of the struct that the expected json data is to be unmarshaled into
 }
 
+//NewRequest is a function which takes the mandatory fields to perform a request to the CW API and returns a pointer to a Request struct
 func NewRequest(cw *ConnectwiseSite, restAction, method string, body []byte) *Request {
 	req := Request{CW: cw, RestAction: restAction, Method: method, Body: body}
 	return &req
 }
 
+//Do is a method of the Request struct which uses the data contained within the Request instance to perform an HTTP request to ConnectWise
 func (req *Request) Do() error {
 	cwurl, err := req.CW.BuildURL(req.RestAction)
 	if err != nil {
@@ -36,14 +39,24 @@ func (req *Request) Do() error {
 		cwurl.RawQuery = parameters.Encode()
 	}
 
-	///////
-	req.Body, err = req.CW.GetRequest(cwurl)
+	client := &http.Client{}
+	jsonBuffer := bytes.NewReader(req.Body)
+	httpreq, err := http.NewRequest(req.Method, cwurl.String(), jsonBuffer)
 	if err != nil {
-		return fmt.Errorf("get request failed: %s", err)
+		return fmt.Errorf("could not construct http request: %s", err)
+	}
+	httpreq.Header.Set("Authorization", req.CW.Auth)
+	httpreq.Header.Set("Content-Type", "application/json")
+	resp, err := client.Do(httpreq)
+	if err != nil {
+		return fmt.Errorf("could not perform http %s request: %s", req.Method, err)
+	}
+	req.Body, err = getHTTPResponseBody(resp)
+	if err != nil {
+		return fmt.Errorf("failed to get http response body: %s", err)
 	}
 
 	return nil
-
 }
 
 //BuildURL will take a REST action such as "/companies/company/5" and then append the CW site to it and return a pointer to a url.URL

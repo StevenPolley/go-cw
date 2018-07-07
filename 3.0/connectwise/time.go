@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+//TimeEntry is a struct to hold the unmarshaled JSON data when making a call to the Time API
 type TimeEntry struct {
 	ID      int `json:"id"`
 	Company struct {
@@ -83,6 +84,7 @@ type TimeEntry struct {
 	}
 }
 
+//GetTimeEntryByID expects a time entry ID and will return a pointer to a TimeEntry struct
 func (cw *ConnectwiseSite) GetTimeEntryByID(timeEntryID int) (*TimeEntry, error) {
 	restAction := fmt.Sprintf("/time/entries/%d", timeEntryID)
 	cwurl, err := cw.BuildURL(restAction)
