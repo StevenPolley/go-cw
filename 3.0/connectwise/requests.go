@@ -21,6 +21,8 @@ type Request struct {
 //NewRequest is a function which takes the mandatory fields to perform a request to the CW API and returns a pointer to a Request struct
 func NewRequest(cw *Site, restAction, method string, body []byte) *Request {
 	req := Request{CW: cw, RestAction: restAction, Method: method, Body: body}
+	req.Parameters = make(map[string]string)
+
 	return &req
 }
 

@@ -160,6 +160,9 @@ func (cw *Site) GetCompanyByName(companyName string) (*[]Company, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
 	}
+	if len(*co) == 0 {
+		return nil, fmt.Errorf("ConnectWise returned no results for %s", companyName)
+	}
 
 	return co, nil
 }
