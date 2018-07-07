@@ -194,7 +194,7 @@ type ConfigurationReference struct {
 }
 
 //GetTicketByID expects a ticket ID and returns a pointer to a Ticket struct
-func (cw *ConnectwiseSite) GetTicketByID(ticketID int) (*Ticket, error) {
+func (cw *Site) GetTicketByID(ticketID int) (*Ticket, error) {
 	restAction := fmt.Sprintf("/service/tickets/%d", ticketID)
 	cwurl, err := cw.BuildURL(restAction)
 	if err != nil {
@@ -215,7 +215,7 @@ func (cw *ConnectwiseSite) GetTicketByID(ticketID int) (*Ticket, error) {
 }
 
 //GetTicketTimeEntriesByID expects a ticket ID and returns a pointer a to a slice of TimeEntryReference's, all the time entries attached to that ticket
-func (cw *ConnectwiseSite) GetTicketTimeEntriesByID(ticketID int) (*[]TimeEntryReference, error) {
+func (cw *Site) GetTicketTimeEntriesByID(ticketID int) (*[]TimeEntryReference, error) {
 	restAction := fmt.Sprintf("/service/tickets/%d/timeentries", ticketID)
 	cwurl, err := cw.BuildURL(restAction)
 	if err != nil {
@@ -236,7 +236,7 @@ func (cw *ConnectwiseSite) GetTicketTimeEntriesByID(ticketID int) (*[]TimeEntryR
 }
 
 //GetTicketConfigurationsByID expects a ticket ID and returns a pointer to a slice of the configurations attached to the ticket
-func (cw *ConnectwiseSite) GetTicketConfigurationsByID(ticketID int) (*[]ConfigurationReference, error) {
+func (cw *Site) GetTicketConfigurationsByID(ticketID int) (*[]ConfigurationReference, error) {
 	restAction := fmt.Sprintf("/service/tickets/%d/configurations", ticketID)
 	cwurl, err := cw.BuildURL(restAction)
 	if err != nil {

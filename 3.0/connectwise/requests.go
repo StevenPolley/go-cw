@@ -11,7 +11,7 @@ import (
 
 //Request is a struct which holds all information that is collected in order to make a request
 type Request struct {
-	CW         *ConnectwiseSite
+	CW         *Site
 	RestAction string
 	Parameters map[string]string
 	Method     string //GET, POST, DELETE, etc
@@ -19,7 +19,7 @@ type Request struct {
 }
 
 //NewRequest is a function which takes the mandatory fields to perform a request to the CW API and returns a pointer to a Request struct
-func NewRequest(cw *ConnectwiseSite, restAction, method string, body []byte) *Request {
+func NewRequest(cw *Site, restAction, method string, body []byte) *Request {
 	req := Request{CW: cw, RestAction: restAction, Method: method, Body: body}
 	return &req
 }
@@ -60,7 +60,7 @@ func (req *Request) Do() error {
 }
 
 //BuildURL will take a REST action such as "/companies/company/5" and then append the CW site to it and return a pointer to a url.URL
-func (cw *ConnectwiseSite) BuildURL(restAction string) (*url.URL, error) {
+func (cw *Site) BuildURL(restAction string) (*url.URL, error) {
 	var cwurl *url.URL
 	cwurl, err := url.Parse(cw.Site)
 	if err != nil {
@@ -86,8 +86,8 @@ func getHTTPResponseBody(resp *http.Response) ([]byte, error) {
 	return body, nil
 }
 
-//GetRequest takes a ConnectwiseSite and request URL, and returns the body of the response
-func (cw *ConnectwiseSite) GetRequest(cwurl *url.URL) ([]byte, error) {
+//GetRequest takes a Site and request URL, and returns the body of the response
+func (cw *Site) GetRequest(cwurl *url.URL) ([]byte, error) {
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", cwurl.String(), nil)
 	if err != nil {
@@ -108,8 +108,8 @@ func (cw *ConnectwiseSite) GetRequest(cwurl *url.URL) ([]byte, error) {
 	return body, nil
 }
 
-//PostRequest takes a ConnectwiseSite and request URL, and returns the body of the response
-func (cw *ConnectwiseSite) PostRequest(cwurl *url.URL, reqBody io.Reader) ([]byte, error) {
+//PostRequest takes a Site and request URL, and returns the body of the response
+func (cw *Site) PostRequest(cwurl *url.URL, reqBody io.Reader) ([]byte, error) {
 	client := &http.Client{}
 	req, err := http.NewRequest("POST", cwurl.String(), reqBody)
 	if err != nil {
@@ -130,8 +130,8 @@ func (cw *ConnectwiseSite) PostRequest(cwurl *url.URL, reqBody io.Reader) ([]byt
 	return body, nil
 }
 
-//DeleteRequest takes a ConnectwiseSite and request URL, and returns the body of the response
-func (cw *ConnectwiseSite) DeleteRequest(cwurl *url.URL) ([]byte, error) {
+//DeleteRequest takes a Site and request URL, and returns the body of the response
+func (cw *Site) DeleteRequest(cwurl *url.URL) ([]byte, error) {
 	client := &http.Client{}
 	req, err := http.NewRequest("DELETE", cwurl.String(), nil)
 	if err != nil {

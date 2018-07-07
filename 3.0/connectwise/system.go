@@ -20,7 +20,7 @@ type Callback struct {
 }
 
 //GetCallbacks returns a slice of Callback structs containing all the callbacks currently registered with ConnectWise
-func (cw *ConnectwiseSite) GetCallbacks() (*[]Callback, error) {
+func (cw *Site) GetCallbacks() (*[]Callback, error) {
 	restAction := "/system/callbacks"
 	cwurl, err := cw.BuildURL(restAction)
 	if err != nil {
@@ -43,7 +43,7 @@ func (cw *ConnectwiseSite) GetCallbacks() (*[]Callback, error) {
 
 //NewCallback expects a Callback struct and will register a new callback with Connectwise
 //TBD: This should return something useful, response body??
-func (cw *ConnectwiseSite) NewCallback(callback Callback) error {
+func (cw *Site) NewCallback(callback Callback) error {
 	restAction := "/system/callbacks"
 	cwurl, err := cw.BuildURL(restAction)
 	if err != nil {
@@ -67,7 +67,7 @@ func (cw *ConnectwiseSite) NewCallback(callback Callback) error {
 
 //DeleteCallback expects the ID of an existing callback and will unregister it with ConnectWise
 //TBD: This should return something useful, response body??
-func (cw *ConnectwiseSite) DeleteCallback(callback int) error {
+func (cw *Site) DeleteCallback(callback int) error {
 	restAction := fmt.Sprintf("/system/callbacks/%d", callback)
 	cwurl, err := cw.BuildURL(restAction)
 	if err != nil {

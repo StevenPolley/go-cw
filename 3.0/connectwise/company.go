@@ -158,7 +158,7 @@ func (co *Company) Unmarshal(data *[]byte) error {
 
 //GetCompanyByName expects an exact match, perhaps an improvement could be made to support wildcard characters.
 //Will return a pointer to a slice of Company's.
-func (cw *ConnectwiseSite) GetCompanyByName(companyName string) (*[]Company, error) {
+func (cw *Site) GetCompanyByName(companyName string) (*[]Company, error) {
 	restAction := "/company/companies"
 	cwurl, err := cw.BuildURL(restAction)
 	if err != nil {
@@ -184,7 +184,7 @@ func (cw *ConnectwiseSite) GetCompanyByName(companyName string) (*[]Company, err
 
 //GetCompanyByID expects the Connectwise Company ID and returns a pointer to a Company
 //Does not return a slice like GetCompanyByName as the ID will only ever have one match
-func (cw *ConnectwiseSite) GetCompanyByID(companyID int) (*Company, error) {
+func (cw *Site) GetCompanyByID(companyID int) (*Company, error) {
 	req := NewRequest(cw, fmt.Sprintf("/company/companies/%d", companyID), "GET", nil)
 	err := req.Do()
 	if err != nil {

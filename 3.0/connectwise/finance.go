@@ -117,7 +117,7 @@ type Agreement struct {
 
 //GetAgreements returns a list of agreements, not paginated and currently not that useful
 //TBD: Pagination and filtering options still need to be considered
-func (cw *ConnectwiseSite) GetAgreements() (*[]Agreement, error) {
+func (cw *Site) GetAgreements() (*[]Agreement, error) {
 	restAction := "/finance/agreements"
 	cwurl, err := cw.BuildURL(restAction)
 	if err != nil {
@@ -140,7 +140,7 @@ func (cw *ConnectwiseSite) GetAgreements() (*[]Agreement, error) {
 
 //GetAgreementsByCompanyName returns a list of agreements that belong to an exact matching company name
 //TBD: Pagination and filtering options still need to be considered
-func (cw *ConnectwiseSite) GetAgreementsByCompanyName(companyName string) (*[]Agreement, error) {
+func (cw *Site) GetAgreementsByCompanyName(companyName string) (*[]Agreement, error) {
 	restAction := "/finance/agreements"
 	cwurl, err := cw.BuildURL(restAction)
 	if err != nil {
@@ -167,7 +167,7 @@ func (cw *ConnectwiseSite) GetAgreementsByCompanyName(companyName string) (*[]Ag
 //GetBillingCycles is not complete
 //TBD: Finish this.
 /*
-func (cw *ConnectwiseSite) GetBillingCycles() {
+func (cw *Site) GetBillingCycles() {
 	restAction := "/finance/billingCycles"
 	cwurl, err := cw.BuildURL(restAction)
 	if err != nil {

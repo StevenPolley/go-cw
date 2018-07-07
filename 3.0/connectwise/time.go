@@ -85,7 +85,7 @@ type TimeEntry struct {
 }
 
 //GetTimeEntryByID expects a time entry ID and will return a pointer to a TimeEntry struct
-func (cw *ConnectwiseSite) GetTimeEntryByID(timeEntryID int) (*TimeEntry, error) {
+func (cw *Site) GetTimeEntryByID(timeEntryID int) (*TimeEntry, error) {
 	restAction := fmt.Sprintf("/time/entries/%d", timeEntryID)
 	cwurl, err := cw.BuildURL(restAction)
 	if err != nil {
