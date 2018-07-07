@@ -3,7 +3,6 @@ package connectwise
 import (
 	"encoding/json"
 	"fmt"
-	"net/url"
 )
 
 //Agreement is a struct to hold the unmarshaled JSON data when making a call to the Finance API
@@ -118,50 +117,38 @@ type Agreement struct {
 //GetAgreements returns a list of agreements, not paginated and currently not that useful
 //TBD: Pagination and filtering options still need to be considered
 func (cw *Site) GetAgreements() (*[]Agreement, error) {
-	restAction := "/finance/agreements"
-	cwurl, err := cw.BuildURL(restAction)
+	req := NewRequest(cw, "/finance/agreements", "GET", nil)
+	err := req.Do()
 	if err != nil {
-		return nil, fmt.Errorf("could not build url %s: %s", restAction, err)
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
 	}
 
-	body, err := cw.GetRequest(cwurl)
-	if err != nil {
-		return nil, fmt.Errorf("could not get request %s: %s", cwurl, err)
-	}
-	agreements := []Agreement{}
-	err = json.Unmarshal(body, &agreements)
+	agreements := &[]Agreement{}
+	err = json.Unmarshal(req.Body, agreements)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
 	}
 
-	return &agreements, nil
-
+	return agreements, nil
 }
 
 //GetAgreementsByCompanyName returns a list of agreements that belong to an exact matching company name
 //TBD: Pagination and filtering options still need to be considered
 func (cw *Site) GetAgreementsByCompanyName(companyName string) (*[]Agreement, error) {
-	restAction := "/finance/agreements"
-	cwurl, err := cw.BuildURL(restAction)
+	req := NewRequest(cw, "/finance/agreements", "GET", nil)
+	req.Parameters["conditions"] = "company/name=\"" + companyName + "\""
+	err := req.Do()
 	if err != nil {
-		return nil, fmt.Errorf("could not build url %s: %s", restAction, err)
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
 	}
 
-	parameters := url.Values{}
-	parameters.Add("conditions", "company/name=\""+companyName+"\"")
-	cwurl.RawQuery = parameters.Encode()
-
-	body, err := cw.GetRequest(cwurl)
-	if err != nil {
-		return nil, fmt.Errorf("could not get request %s: %s", cwurl, err)
-	}
-	agreements := []Agreement{}
-	err = json.Unmarshal(body, &agreements)
+	agreements := &[]Agreement{}
+	err = json.Unmarshal(req.Body, agreements)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
 	}
 
-	return &agreements, nil
+	return agreements, nil
 }
 
 //GetBillingCycles is not complete

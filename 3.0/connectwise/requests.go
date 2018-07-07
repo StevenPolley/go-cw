@@ -3,7 +3,6 @@ package connectwise
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -83,72 +82,6 @@ func getHTTPResponseBody(resp *http.Response) ([]byte, error) {
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("could not read response body of request")
-	}
-
-	return body, nil
-}
-
-//GetRequest takes a Site and request URL, and returns the body of the response
-func (cw *Site) GetRequest(cwurl *url.URL) ([]byte, error) {
-	client := &http.Client{}
-	req, err := http.NewRequest("GET", cwurl.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("could not construct http request: %s", err)
-	}
-	req.Header.Set("Authorization", cw.Auth)
-	req.Header.Set("Content-Type", "application/json")
-	response, err := client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("could not perform http get request: %s", err)
-	}
-
-	body, err := getHTTPResponseBody(response)
-	if err != nil {
-		return nil, fmt.Errorf("could not get http response body: %s", err)
-	}
-
-	return body, nil
-}
-
-//PostRequest takes a Site and request URL, and returns the body of the response
-func (cw *Site) PostRequest(cwurl *url.URL, reqBody io.Reader) ([]byte, error) {
-	client := &http.Client{}
-	req, err := http.NewRequest("POST", cwurl.String(), reqBody)
-	if err != nil {
-		return nil, fmt.Errorf("could not construct http request: %s", err)
-	}
-	req.Header.Set("Authorization", cw.Auth)
-	req.Header.Set("Content-Type", "application/json")
-	response, err := client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("could not perform http post request: %s", err)
-	}
-
-	body, err := getHTTPResponseBody(response)
-	if err != nil {
-		return nil, fmt.Errorf("could not get http response body: %s", err)
-	}
-
-	return body, nil
-}
-
-//DeleteRequest takes a Site and request URL, and returns the body of the response
-func (cw *Site) DeleteRequest(cwurl *url.URL) ([]byte, error) {
-	client := &http.Client{}
-	req, err := http.NewRequest("DELETE", cwurl.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("could not construct http request: %s", err)
-	}
-	req.Header.Set("Authorization", cw.Auth)
-	req.Header.Set("Content-Type", "application/json")
-	response, err := client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("could not perform http delete request: %s", err)
-	}
-
-	body, err := getHTTPResponseBody(response)
-	if err != nil {
-		return nil, fmt.Errorf("could not get http response body: %s", err)
 	}
 
 	return body, nil

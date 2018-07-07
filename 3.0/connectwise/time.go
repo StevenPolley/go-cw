@@ -86,22 +86,17 @@ type TimeEntry struct {
 
 //GetTimeEntryByID expects a time entry ID and will return a pointer to a TimeEntry struct
 func (cw *Site) GetTimeEntryByID(timeEntryID int) (*TimeEntry, error) {
-	restAction := fmt.Sprintf("/time/entries/%d", timeEntryID)
-	cwurl, err := cw.BuildURL(restAction)
+	req := NewRequest(cw, fmt.Sprintf("/time/entries/%d", timeEntryID), "GET", nil)
+	err := req.Do()
 	if err != nil {
-		return nil, fmt.Errorf("could not build url %s: %s", restAction, err)
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
 	}
 
-	body, err := cw.GetRequest(cwurl)
-	if err != nil {
-		return nil, fmt.Errorf("could not get request %s: %s", cwurl, err)
-	}
-
-	timeEntry := TimeEntry{}
-	err = json.Unmarshal(body, &timeEntry)
+	timeEntry := &TimeEntry{}
+	err = json.Unmarshal(req.Body, timeEntry)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
 	}
 
-	return &timeEntry, nil
+	return timeEntry, nil
 }
