@@ -11,6 +11,10 @@ type Site struct {
 	Auth string
 }
 
+type Count struct {
+	Count int `json:"count"`
+}
+
 //NewSite returns a pointer to a ConnectwiseSite struct with the site and auth string available for use in API requests
 func NewSite(site string, publicKey string, privateKey string, company string) *Site {
 	//The auth string must be formatted in this way when used in requests to the API

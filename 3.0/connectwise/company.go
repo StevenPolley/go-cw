@@ -145,6 +145,23 @@ type Company struct {
 	} `json:"customFields"`
 }
 
+//CompanyCount returns the number of companies in ConnectWise
+func (cw *Site) CompanyCount() (int, error) {
+	req := NewRequest(cw, "/company/companies/count", "GET", nil)
+	err := req.Do()
+	if err != nil {
+		return 0, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	count := &Count{}
+	err = json.Unmarshal(req.Body, count)
+	if err != nil {
+		return 0, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	return count.Count, nil
+}
+
 //GetCompanyByName expects an exact match, perhaps an improvement could be made to support wildcard characters.
 //Will return a pointer to a slice of Company's.
 func (cw *Site) GetCompanyByName(companyName string) (*[]Company, error) {
