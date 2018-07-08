@@ -147,7 +147,7 @@ type Company struct {
 
 //CompanyCount returns the number of companies in ConnectWise
 func (cw *Site) CompanyCount() (int, error) {
-	req := NewRequest(cw, "/company/companies/count", "GET", nil)
+	req := cw.NewRequest("/company/companies/count", "GET", nil)
 	err := req.Do()
 	if err != nil {
 		return 0, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
@@ -165,7 +165,7 @@ func (cw *Site) CompanyCount() (int, error) {
 //GetCompanyByName expects an exact match, perhaps an improvement could be made to support wildcard characters.
 //Will return a pointer to a Company
 func (cw *Site) GetCompanyByName(companyName string) (*Company, error) {
-	req := NewRequest(cw, "/company/companies", "GET", nil)
+	req := cw.NewRequest("/company/companies", "GET", nil)
 	req.URLValues.Add("conditions", "name=\""+companyName+"\"")
 
 	err := req.Do()
@@ -189,7 +189,7 @@ func (cw *Site) GetCompanyByName(companyName string) (*Company, error) {
 //GetCompanyByID expects the Connectwise Company ID and returns a pointer to a Company
 //Does not return a slice like GetCompanyByName as the ID will only ever have one match
 func (cw *Site) GetCompanyByID(companyID int) (*Company, error) {
-	req := NewRequest(cw, fmt.Sprintf("/company/companies/%d", companyID), "GET", nil)
+	req := cw.NewRequest(fmt.Sprintf("/company/companies/%d", companyID), "GET", nil)
 	err := req.Do()
 	if err != nil {
 		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)

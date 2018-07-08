@@ -117,7 +117,7 @@ type Agreement struct {
 //GetAgreements returns a list of agreements, not paginated and currently not that useful
 //TBD: Pagination and filtering options still need to be considered
 func (cw *Site) GetAgreements() (*[]Agreement, error) {
-	req := NewRequest(cw, "/finance/agreements", "GET", nil)
+	req := cw.NewRequest("/finance/agreements", "GET", nil)
 	err := req.Do()
 	if err != nil {
 		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
@@ -135,7 +135,7 @@ func (cw *Site) GetAgreements() (*[]Agreement, error) {
 //GetAgreementsByCompanyName returns a list of agreements that belong to an exact matching company name
 //TBD: Pagination and filtering options still need to be considered
 func (cw *Site) GetAgreementsByCompanyName(companyName string) (*[]Agreement, error) {
-	req := NewRequest(cw, "/finance/agreements", "GET", nil)
+	req := cw.NewRequest("/finance/agreements", "GET", nil)
 	req.URLValues.Add("conditions", "company/name=\""+companyName+"\"")
 
 	err := req.Do()
@@ -154,7 +154,7 @@ func (cw *Site) GetAgreementsByCompanyName(companyName string) (*[]Agreement, er
 
 //GetAgreementByID returns an agreement that matches the ID provided
 func (cw *Site) GetAgreementByID(agreementID int) (*Agreement, error) {
-	req := NewRequest(cw, fmt.Sprintf("/finance/agreements/%d", agreementID), "GET", nil)
+	req := cw.NewRequest(fmt.Sprintf("/finance/agreements/%d", agreementID), "GET", nil)
 	err := req.Do()
 	if err != nil {
 		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)

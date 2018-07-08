@@ -195,7 +195,7 @@ type ConfigurationReference struct {
 
 //GetTicketByID expects a ticket ID and returns a pointer to a Ticket struct
 func (cw *Site) GetTicketByID(ticketID int) (*Ticket, error) {
-	req := NewRequest(cw, fmt.Sprintf("/service/tickets/%d", ticketID), "GET", nil)
+	req := cw.NewRequest(fmt.Sprintf("/service/tickets/%d", ticketID), "GET", nil)
 	err := req.Do()
 	if err != nil {
 		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
@@ -213,7 +213,7 @@ func (cw *Site) GetTicketByID(ticketID int) (*Ticket, error) {
 //GetTicketTimeEntriesByID expects a ticket ID and returns a pointer a to a slice of TimeEntryReference's, all the time entries attached to that ticket
 func (cw *Site) GetTicketTimeEntriesByID(ticketID int) (*[]TimeEntryReference, error) {
 
-	req := NewRequest(cw, fmt.Sprintf("/service/tickets/%d/timeentries", ticketID), "GET", nil)
+	req := cw.NewRequest(fmt.Sprintf("/service/tickets/%d/timeentries", ticketID), "GET", nil)
 	err := req.Do()
 	if err != nil {
 		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
@@ -230,7 +230,7 @@ func (cw *Site) GetTicketTimeEntriesByID(ticketID int) (*[]TimeEntryReference, e
 
 //GetTicketConfigurationsByID expects a ticket ID and returns a pointer to a slice of the configurations attached to the ticket
 func (cw *Site) GetTicketConfigurationsByID(ticketID int) (*[]ConfigurationReference, error) {
-	req := NewRequest(cw, fmt.Sprintf("/service/tickets/%d/configurations", ticketID), "GET", nil)
+	req := cw.NewRequest(fmt.Sprintf("/service/tickets/%d/configurations", ticketID), "GET", nil)
 	err := req.Do()
 	if err != nil {
 		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)

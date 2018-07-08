@@ -23,7 +23,7 @@ type Callback struct {
 
 //GetCallbacks returns a slice of Callback structs containing all the callbacks currently registered with ConnectWise
 func (cw *Site) GetCallbacks() (*[]Callback, error) {
-	req := NewRequest(cw, "/system/callbacks", "GET", nil)
+	req := cw.NewRequest("/system/callbacks", "GET", nil)
 	err := req.Do()
 	if err != nil {
 		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
@@ -46,7 +46,7 @@ func (cw *Site) NewCallback(callback *Callback) (*Callback, error) {
 		return nil, fmt.Errorf("could not marshal json data: %s", err)
 	}
 
-	req := NewRequest(cw, "/system/callbacks", "POST", jsonCallback)
+	req := cw.NewRequest("/system/callbacks", "POST", jsonCallback)
 	err = req.Do()
 	if err != nil {
 		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
@@ -64,7 +64,7 @@ func (cw *Site) NewCallback(callback *Callback) (*Callback, error) {
 //DeleteCallback expects the ID of an existing callback and will unregister it with ConnectWise
 //Does not return anything - CW gives an empty response body
 func (cw *Site) DeleteCallback(callback int) error {
-	req := NewRequest(cw, fmt.Sprintf("/system/callbacks/%d", callback), "DELETE", nil)
+	req := cw.NewRequest(fmt.Sprintf("/system/callbacks/%d", callback), "DELETE", nil)
 	err := req.Do()
 	if err != nil {
 		return fmt.Errorf("request failed for %s: %s", req.RestAction, err)

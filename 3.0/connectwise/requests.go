@@ -2,6 +2,7 @@ package connectwise
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -20,10 +21,33 @@ type Request struct {
 }
 
 //NewRequest is a function which takes the mandatory fields to perform a request to the CW API and returns a pointer to a Request struct
-func NewRequest(cw *Site, restAction, method string, body []byte) *Request {
+func (cw *Site) NewRequest(restAction, method string, body []byte) *Request {
 	req := Request{CW: cw, RestAction: restAction, Method: method, Body: body}
 	req.URLValues = url.Values{}
 	return &req
+}
+
+//NewPaginationRequest is a method which takes in the mandatory fields to paginate
+//TBD - finish this
+func (cw *Site) NewPaginationRequest(restAction, method string, body []byte, pageSize, pageNumber int) (*[]Company, error) {
+
+	req := cw.NewRequest("/company/companies", "GET", nil)
+
+	req.Page = pageNumber
+	req.PageSize = pageSize
+	err := req.Do()
+	if err != nil {
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	co := &[]Company{}
+	err = json.Unmarshal(req.Body, co)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	return co, nil
+
 }
 
 //Do is a method of the Request struct which uses the data contained within the Request instance to perform an HTTP request to ConnectWise

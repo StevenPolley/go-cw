@@ -86,7 +86,7 @@ type TimeEntry struct {
 
 //GetTimeEntryByID expects a time entry ID and will return a pointer to a TimeEntry struct
 func (cw *Site) GetTimeEntryByID(timeEntryID int) (*TimeEntry, error) {
-	req := NewRequest(cw, fmt.Sprintf("/time/entries/%d", timeEntryID), "GET", nil)
+	req := cw.NewRequest(fmt.Sprintf("/time/entries/%d", timeEntryID), "GET", nil)
 	err := req.Do()
 	if err != nil {
 		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
