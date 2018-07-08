@@ -151,21 +151,19 @@ func (cw *Site) GetAgreementsByCompanyName(companyName string) (*[]Agreement, er
 	return agreements, nil
 }
 
-//GetBillingCycles is not complete
-//TBD: Finish this.
-/*
-func (cw *Site) GetBillingCycles() {
-	restAction := "/finance/billingCycles"
-	cwurl, err := cw.BuildURL(restAction)
+//GetAgreementByID returns an agreement that matches the ID provided
+func (cw *Site) GetAgreementByID(agreementID int) (*Agreement, error) {
+	req := NewRequest(cw, fmt.Sprintf("/finance/agreements/%d", agreementID), "GET", nil)
+	err := req.Do()
 	if err != nil {
-		return nil, fmt.Errorf("could not build url %s: %g", restAction, err)
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
 	}
 
-	body, err := cw.GetRequest(cwurl)
+	agreement := &Agreement{}
+	err = json.Unmarshal(req.Body, agreement)
 	if err != nil {
-		return nil, fmt.Errorf("could not get request %s: %g", cwurl, err)
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
 	}
-	fmt.Print(string(body))
-	//	check(json.Unmarshal(body, &ticket))
+
+	return agreement, nil
 }
-*/
