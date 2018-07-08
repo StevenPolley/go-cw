@@ -14,7 +14,9 @@ type Request struct {
 	RestAction string
 	Method     string     //GET, POST, DELETE, etc
 	Body       []byte     //In a GET request, this is an instance of the struct that the expected json data is to be unmarshaled into
-	URLValues  url.Values //Parameters sent to CW for filtering by conditions, page, sorting, etc.
+	URLValues  url.Values //Parameters sent to CW for filtering by conditions that utilize strings
+	Page       int
+	PageSize   int
 }
 
 //NewRequest is a function which takes the mandatory fields to perform a request to the CW API and returns a pointer to a Request struct
@@ -31,9 +33,12 @@ func (req *Request) Do() error {
 		return fmt.Errorf("could not build url %s: %s", req.RestAction, err)
 	}
 
-	//Does it hurt running this even if it's empty?
-	cwurl.RawQuery = req.URLValues.Encode()
-	fmt.Println(cwurl.RawQuery)
+	//If pagination parameters are not being specified, then don't include them in the URL - not all endpoints will accept page and pagesize, they will 400 - bad request
+	if req.Page == 0 || req.PageSize == 0 {
+		cwurl.RawQuery = req.URLValues.Encode()
+	} else {
+		cwurl.RawQuery = fmt.Sprintf("%s&page=%d&pageSize=%d", req.URLValues.Encode(), req.Page, req.PageSize)
+	}
 
 	client := &http.Client{}
 	jsonBuffer := bytes.NewReader(req.Body)

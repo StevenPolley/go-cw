@@ -11,6 +11,7 @@ type Site struct {
 	Auth string
 }
 
+//Count is a struct used for unmarshalling JSON data when using the Count endpoints in Connectwise (eg: counting number of companies)
 type Count struct {
 	Count int `json:"count"`
 }
