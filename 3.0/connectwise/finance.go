@@ -136,7 +136,8 @@ func (cw *Site) GetAgreements() (*[]Agreement, error) {
 //TBD: Pagination and filtering options still need to be considered
 func (cw *Site) GetAgreementsByCompanyName(companyName string) (*[]Agreement, error) {
 	req := NewRequest(cw, "/finance/agreements", "GET", nil)
-	req.Parameters["conditions"] = "company/name=\"" + companyName + "\""
+	req.URLValues.Add("conditions", "company/name=\""+companyName+"\"")
+
 	err := req.Do()
 	if err != nil {
 		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)

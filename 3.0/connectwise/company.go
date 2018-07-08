@@ -163,10 +163,11 @@ func (cw *Site) CompanyCount() (int, error) {
 }
 
 //GetCompanyByName expects an exact match, perhaps an improvement could be made to support wildcard characters.
-//Will return a pointer to a slice of Company's.
-func (cw *Site) GetCompanyByName(companyName string) (*[]Company, error) {
+//Will return a pointer to a Company
+func (cw *Site) GetCompanyByName(companyName string) (*Company, error) {
 	req := NewRequest(cw, "/company/companies", "GET", nil)
-	req.Parameters["conditions"] = "name=\"" + companyName + "\""
+	req.URLValues.Add("conditions", "name=\""+companyName+"\"")
+
 	err := req.Do()
 	if err != nil {
 		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
@@ -181,7 +182,8 @@ func (cw *Site) GetCompanyByName(companyName string) (*[]Company, error) {
 		return nil, fmt.Errorf("ConnectWise returned no results for %s", companyName)
 	}
 
-	return co, nil
+	//This endpoint always returns a JSON array, but given the condition we apply, we can safely just return the first and only item in the array
+	return &(*co)[0], nil
 }
 
 //GetCompanyByID expects the Connectwise Company ID and returns a pointer to a Company

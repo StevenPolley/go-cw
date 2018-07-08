@@ -12,16 +12,15 @@ import (
 type Request struct {
 	CW         *Site
 	RestAction string
-	Parameters map[string]string
-	Method     string //GET, POST, DELETE, etc
-	Body       []byte //In a GET request, this is an instance of the struct that the expected json data is to be unmarshaled into
+	Method     string     //GET, POST, DELETE, etc
+	Body       []byte     //In a GET request, this is an instance of the struct that the expected json data is to be unmarshaled into
+	URLValues  url.Values //Parameters sent to CW for filtering by conditions, page, sorting, etc.
 }
 
 //NewRequest is a function which takes the mandatory fields to perform a request to the CW API and returns a pointer to a Request struct
 func NewRequest(cw *Site, restAction, method string, body []byte) *Request {
 	req := Request{CW: cw, RestAction: restAction, Method: method, Body: body}
-	req.Parameters = make(map[string]string)
-
+	req.URLValues = url.Values{}
 	return &req
 }
 
@@ -32,13 +31,9 @@ func (req *Request) Do() error {
 		return fmt.Errorf("could not build url %s: %s", req.RestAction, err)
 	}
 
-	if len(req.Parameters) > 0 {
-		parameters := url.Values{}
-		for key, value := range req.Parameters {
-			parameters.Add(key, value)
-		}
-		cwurl.RawQuery = parameters.Encode()
-	}
+	//Does it hurt running this even if it's empty?
+	cwurl.RawQuery = req.URLValues.Encode()
+	fmt.Println(cwurl.RawQuery)
 
 	client := &http.Client{}
 	jsonBuffer := bytes.NewReader(req.Body)
