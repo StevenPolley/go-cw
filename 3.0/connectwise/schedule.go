@@ -3,6 +3,7 @@ package connectwise
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 )
 
 type Calendar struct {
@@ -43,8 +44,8 @@ type ScheduleEntry struct {
 			MemberHref string `json:"member_href"`
 		} `json:"_info"`
 	} `json:"member,omitempty"`
-	DateStart string `json:"dateStart,omitempty"`
-	DateEnd   string `json:"dateEnd,omitempty"`
+	DateStart time.Time `json:"dateStart,omitempty"`
+	DateEnd   time.Time `json:"dateEnd,omitempty"`
 	Reminder  struct {
 		ID   int    `json:"id"`
 		Name string `json:"name"`
@@ -92,9 +93,13 @@ func (cw *Site) GetCalendars() (*[]Calendar, error) {
 	return calendar, nil
 }
 
-//ScheduleEntryCount returns the number of companies in ConnectWise
-func (cw *Site) ScheduleEntryOnDayCount() (int, error) {
+//ScheduleEntryOnDayCount returns the number of companies in ConnectWise
+func (cw *Site) ScheduleEntryOnDayCount(day time.Time) (int, error) {
 	req := cw.NewRequest("/schedule/entries/count", "GET", nil)
+	req.PageSize = 3000
+	tom := day.Add(time.Hour * 24)
+	fmt.Printf("%d-%d-%dT00:00:00Z", day.Year(), day.Month(), day.Day())
+	fmt.Println(tom)
 	req.URLValues.Add("conditions", "datestart > [2018-07-26T00:00:00Z] and dateend < [2018-07-27T00:00:00Z]")
 	err := req.Do()
 	if err != nil {
@@ -111,10 +116,11 @@ func (cw *Site) ScheduleEntryOnDayCount() (int, error) {
 }
 
 //GetScheduleEntriesOnDay expects a date in the format of "YYYY-MM-DD" and returns a pointer to a slice of ScheduleEntries on that day
-func (cw *Site) GetScheduleEntriesOnDay(day string) (*[]ScheduleEntry, error) {
+func (cw *Site) GetScheduleEntriesOnDay(day time.Time) (*[]ScheduleEntry, error) {
 	req := cw.NewRequest("/schedule/entries", "GET", nil)
 	req.URLValues.Add("orderBy", "dateStart asc")
-	req.URLValues.Add("conditions", "datestart > [2018-07-26T00:00:00Z] and dateend < [2018-07-27T00:00:00Z]")
+	tom := day.Add(time.Hour * 24)
+	req.URLValues.Add("conditions", fmt.Sprintf("datestart > [%d-%d-%dT00:00:00Z] and dateend < [%d-%d-%dT00:00:00Z]", day.Year(), day.Month(), day.Day(), tom.Year(), tom.Month(), tom.Day()))
 
 	err := req.Do()
 	if err != nil {
