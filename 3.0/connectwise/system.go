@@ -21,6 +21,27 @@ type Callback struct {
 	} `json:"_info"`
 }
 
+//GetMembers returns a slice of Member structs containing all the members (users) of connectwise
+func (cw *Site) GetSystemMembers() error {
+	req := cw.NewRequest("/system/members", "GET", nil)
+	err := req.Do()
+	if err != nil {
+		return fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	fmt.Println("test")
+	fmt.Println(req.Body)
+	/*
+		callbacks := &[]Callback{}
+		err = json.Unmarshal(req.Body, callbacks)
+		if err != nil {
+			return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+		}
+
+	*/
+	return nil
+}
+
 //GetCallbacks returns a slice of Callback structs containing all the callbacks currently registered with ConnectWise
 func (cw *Site) GetCallbacks() (*[]Callback, error) {
 	req := cw.NewRequest("/system/callbacks", "GET", nil)
