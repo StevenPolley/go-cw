@@ -93,8 +93,9 @@ func (cw *Site) GetCalendars() (*[]Calendar, error) {
 }
 
 //ScheduleEntryCount returns the number of companies in ConnectWise
-func (cw *Site) ScheduleEntryCount() (int, error) {
+func (cw *Site) ScheduleEntryOnDayCount() (int, error) {
 	req := cw.NewRequest("/schedule/entries/count", "GET", nil)
+	req.URLValues.Add("conditions", "datestart > [2018-07-26T00:00:00Z] and dateend < [2018-07-27T00:00:00Z]")
 	err := req.Do()
 	if err != nil {
 		return 0, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
@@ -112,8 +113,9 @@ func (cw *Site) ScheduleEntryCount() (int, error) {
 //GetScheduleEntriesOnDay expects a date in the format of "YYYY-MM-DD" and returns a pointer to a slice of ScheduleEntries on that day
 func (cw *Site) GetScheduleEntriesOnDay(day string) (*[]ScheduleEntry, error) {
 	req := cw.NewRequest("/schedule/entries", "GET", nil)
-	//	req.URLValues.Add("orderBy", "dateStart desc")
-	req.URLValues.Add("conditions", "datestart=2036-02-28T18:18:00Z")
+	req.URLValues.Add("orderBy", "dateStart asc")
+	req.URLValues.Add("conditions", "datestart > [2018-07-26T00:00:00Z] and dateend < [2018-07-27T00:00:00Z]")
+
 	err := req.Do()
 	if err != nil {
 		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
