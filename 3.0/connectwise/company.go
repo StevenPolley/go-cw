@@ -145,6 +145,22 @@ type Company struct {
 	} `json:"customFields"`
 }
 
+type CompanyStatus struct {
+	ID                   int    `json:"id"`
+	Name                 string `json:"name"`
+	DefaultFlag          bool   `json:"defaultFlag"`
+	InactiveFlag         bool   `json:"inactiveFlag"`
+	NotifyFlag           bool   `json:"notifyFlag"`
+	DisallowSavingFlag   bool   `json:"disallowSavingFlag"`
+	NotificationMessage  string `json:"notificationMessage,omitempty"`
+	CustomNoteFlag       bool   `json:"customNoteFlag"`
+	CancelOpenTracksFlag bool   `json:"cancelOpenTracksFlag"`
+	Info                 struct {
+		LastUpdated time.Time `json:"lastUpdated"`
+		UpdatedBy   string    `json:"updatedBy"`
+	} `json:"_info"`
+}
+
 //CompanyCount returns the number of companies in ConnectWise
 func (cw *Site) CompanyCount() (int, error) {
 	req := cw.NewRequest("/company/companies/count", "GET", nil)
@@ -202,4 +218,20 @@ func (cw *Site) GetCompanyByID(companyID int) (*Company, error) {
 	}
 
 	return co, nil
+}
+
+func (cw *Site) GetCompanyStatuses() (*[]CompanyStatus, error) {
+	req := cw.NewRequest("/company/companies/statuses", "GET", nil)
+	err := req.Do()
+	if err != nil {
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	costat := &[]CompanyStatus{}
+	err = json.Unmarshal(req.Body, costat)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	return costat, nil
 }

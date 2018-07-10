@@ -67,6 +67,48 @@ type BoardTeam struct {
 	} `json:"_info"`
 }
 
+type BoardStatus struct {
+	ID    int    `json:"id"`
+	Name  string `json:"name"`
+	Board struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+		Info struct {
+			BoardHref string `json:"board_href"`
+		} `json:"_info"`
+	} `json:"board"`
+	ExternalIntegrationXref struct {
+		ID         int    `json:"id"`
+		Identifier string `json:"identifier"`
+		Name       string `json:"name"`
+		Info       struct {
+			StatusExternalIntegrationHref string `json:"statusExternalIntegration_href"`
+		} `json:"_info"`
+	} `json:"externalIntegrationXref,omitempty"`
+	SortOrder                 int    `json:"sortOrder"`
+	DisplayOnBoard            bool   `json:"displayOnBoard"`
+	Inactive                  bool   `json:"inactive"`
+	ClosedStatus              bool   `json:"closedStatus"`
+	TimeEntryNotAllowed       bool   `json:"timeEntryNotAllowed"`
+	DefaultFlag               bool   `json:"defaultFlag"`
+	EscalationStatus          string `json:"escalationStatus"`
+	CustomerPortalDescription string `json:"customerPortalDescription,omitempty"`
+	CustomerPortalFlag        bool   `json:"customerPortalFlag"`
+	EmailTemplate             struct {
+		ID         int    `json:"id"`
+		Identifier string `json:"identifier"`
+		Info       struct {
+			EmailTemplateHref string `json:"emailTemplate_href"`
+		} `json:"_info"`
+	} `json:"emailTemplate,omitempty"`
+	Info struct {
+		LastUpdated time.Time `json:"lastUpdated"`
+		UpdatedBy   string    `json:"updatedBy"`
+		DateEntered time.Time `json:"dateEntered"`
+		EnteredBy   string    `json:"enteredBy"`
+	} `json:"_info"`
+}
+
 //Ticket is a struct to hold the unmarshaled JSON data when making a call to the Service API
 type Ticket struct {
 	ID         int    `json:"id"`
@@ -469,6 +511,23 @@ func (cw *Site) GetBoardTeams(boardID int) (*[]BoardTeam, error) {
 	}
 
 	return boardTeam, nil
+}
+
+func (cw *Site) GetBoardStatuses(boardID int) (*[]BoardStatus, error) {
+	req := cw.NewRequest(fmt.Sprintf("/service/boards/%d/statuses", boardID), "GET", nil)
+	err := req.Do()
+	if err != nil {
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	boardStatus := &[]BoardStatus{}
+	err = json.Unmarshal(req.Body, boardStatus)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	return boardStatus, nil
+
 }
 
 //GetBoardTeamByName returns a pointer to a board team in Connectwise
