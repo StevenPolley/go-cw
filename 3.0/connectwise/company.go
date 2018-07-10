@@ -179,7 +179,7 @@ func (cw *Site) GetCompanyByName(companyName string) (*Company, error) {
 		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
 	}
 	if len(*co) == 0 {
-		return nil, fmt.Errorf("ConnectWise returned no results for %s", companyName)
+		return nil, fmt.Errorf("connectsise returned no results for %s", companyName)
 	}
 
 	//This endpoint always returns a JSON array, but given the condition we apply, we can safely just return the first and only item in the array

@@ -6,6 +6,66 @@ import (
 	"time"
 )
 
+//ServiceTeam is a struct to hold the unmarshaled JSON data when making a call to the service API
+type ServiceTeam struct {
+	ID     int    `json:"id"`
+	Name   string `json:"name"`
+	Leader struct {
+		ID         int    `json:"id"`
+		Identifier string `json:"identifier"`
+		Name       string `json:"name"`
+		Info       struct {
+			MemberHref string `json:"member_href"`
+		} `json:"_info"`
+	} `json:"leader"`
+	Location struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+		Info struct {
+			LocationHref string `json:"location_href"`
+		} `json:"_info"`
+	} `json:"location"`
+	Department struct {
+		ID         int    `json:"id"`
+		Identifier string `json:"identifier"`
+		Name       string `json:"name"`
+		Info       struct {
+			DepartmentHref string `json:"department_href"`
+		} `json:"_info"`
+	} `json:"department"`
+	DeleteNotifyFlag bool `json:"deleteNotifyFlag"`
+	Info             struct {
+		LastUpdated time.Time `json:"lastUpdated"`
+		UpdatedBy   string    `json:"updatedBy"`
+		DateEntered time.Time `json:"dateEntered"`
+		EnteredBy   string    `json:"enteredBy"`
+	} `json:"_info"`
+}
+
+//BoardTeam is a struct to hold the unmarshaled JSON data when making a call to the service API
+type BoardTeam struct {
+	ID         int    `json:"id"`
+	Name       string `json:"name"`
+	TeamLeader struct {
+		ID         int    `json:"id"`
+		Identifier string `json:"identifier"`
+		Name       string `json:"name"`
+		Info       struct {
+			MemberHref string `json:"member_href"`
+		} `json:"_info"`
+	} `json:"teamLeader"`
+	Members              []int `json:"members"`
+	DefaultFlag          bool  `json:"defaultFlag"`
+	NotifyOnTicketDelete bool  `json:"notifyOnTicketDelete"`
+	BoardID              int   `json:"boardId"`
+	LocationID           int   `json:"locationId"`
+	BusinessUnitID       int   `json:"businessUnitId"`
+	Info                 struct {
+		LastUpdated time.Time `json:"lastUpdated"`
+		UpdatedBy   string    `json:"updatedBy"`
+	} `json:"_info"`
+}
+
 //Ticket is a struct to hold the unmarshaled JSON data when making a call to the Service API
 type Ticket struct {
 	ID         int    `json:"id"`
@@ -172,6 +232,137 @@ type Ticket struct {
 	ContactPhoneExtension string `json:"contactPhoneExtension,omitempty"`
 }
 
+//Board is a struct to hold the unmarshaled JSON data when making a call to the Service API
+type Board struct {
+	ID       int    `json:"id"`
+	Name     string `json:"name"`
+	Location struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+		Info struct {
+			LocationHref string `json:"location_href"`
+		} `json:"_info"`
+	} `json:"location"`
+	Department struct {
+		ID         int    `json:"id"`
+		Identifier string `json:"identifier"`
+		Name       string `json:"name"`
+		Info       struct {
+			DepartmentHref string `json:"department_href"`
+		} `json:"_info"`
+	} `json:"department"`
+	InactiveFlag    bool `json:"inactiveFlag"`
+	SignOffTemplate struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+	} `json:"signOffTemplate"`
+	SendToContactFlag  bool `json:"sendToContactFlag"`
+	SendToResourceFlag bool `json:"sendToResourceFlag"`
+	ProjectFlag        bool `json:"projectFlag"`
+	BoardIcon          struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+		Info struct {
+			Filename             string `json:"filename"`
+			DocumentHref         string `json:"document_href"`
+			DocumentDownloadHref string `json:"documentDownload_href"`
+		} `json:"_info"`
+	} `json:"boardIcon,omitempty"`
+	BillTicketsAfterClosedFlag    bool `json:"billTicketsAfterClosedFlag"`
+	BillTicketSeparatelyFlag      bool `json:"billTicketSeparatelyFlag"`
+	BillUnapprovedTimeExpenseFlag bool `json:"billUnapprovedTimeExpenseFlag"`
+	OverrideBillingSetupFlag      bool `json:"overrideBillingSetupFlag"`
+	DispatchMember                struct {
+		ID         int    `json:"id"`
+		Identifier string `json:"identifier"`
+		Name       string `json:"name"`
+		Info       struct {
+			MemberHref string `json:"member_href"`
+		} `json:"_info"`
+	} `json:"dispatchMember,omitempty"`
+	ServiceManagerMember struct {
+		ID         int    `json:"id"`
+		Identifier string `json:"identifier"`
+		Name       string `json:"name"`
+		Info       struct {
+			MemberHref string `json:"member_href"`
+		} `json:"_info"`
+	} `json:"serviceManagerMember,omitempty"`
+	DutyManagerMember struct {
+		ID         int    `json:"id"`
+		Identifier string `json:"identifier"`
+		Name       string `json:"name"`
+		Info       struct {
+			MemberHref string `json:"member_href"`
+		} `json:"_info"`
+	} `json:"dutyManagerMember,omitempty"`
+	OncallMember struct {
+		ID         int    `json:"id"`
+		Identifier string `json:"identifier"`
+		Name       string `json:"name"`
+		Info       struct {
+			MemberHref string `json:"member_href"`
+		} `json:"_info"`
+	} `json:"oncallMember,omitempty"`
+	WorkRole struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+		Info struct {
+			WorkRoleHref string `json:"workRole_href"`
+		} `json:"_info"`
+	} `json:"workRole,omitempty"`
+	WorkType struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+		Info struct {
+			WorkTypeHref string `json:"workType_href"`
+		} `json:"_info"`
+	} `json:"workType,omitempty"`
+	BillTime                            string `json:"billTime"`
+	BillExpense                         string `json:"billExpense"`
+	BillProduct                         string `json:"billProduct"`
+	AutoAssignNewTicketsFlag            bool   `json:"autoAssignNewTicketsFlag"`
+	AutoAssignNewECTicketsFlag          bool   `json:"autoAssignNewECTicketsFlag"`
+	AutoAssignNewPortalTicketsFlag      bool   `json:"autoAssignNewPortalTicketsFlag"`
+	DiscussionsLockedFlag               bool   `json:"discussionsLockedFlag"`
+	TimeEntryLockedFlag                 bool   `json:"timeEntryLockedFlag"`
+	NotifyEmailFrom                     string `json:"notifyEmailFrom,omitempty"`
+	NotifyEmailFromName                 string `json:"notifyEmailFromName"`
+	ClosedLoopDiscussionsFlag           bool   `json:"closedLoopDiscussionsFlag"`
+	ClosedLoopResolutionFlag            bool   `json:"closedLoopResolutionFlag"`
+	ClosedLoopInternalAnalysisFlag      bool   `json:"closedLoopInternalAnalysisFlag"`
+	TimeEntryDiscussionFlag             bool   `json:"timeEntryDiscussionFlag"`
+	TimeEntryResolutionFlag             bool   `json:"timeEntryResolutionFlag"`
+	TimeEntryInternalAnalysisFlag       bool   `json:"timeEntryInternalAnalysisFlag"`
+	ProblemSort                         string `json:"problemSort"`
+	ResolutionSort                      string `json:"resolutionSort"`
+	InternalAnalysisSort                string `json:"internalAnalysisSort"`
+	EmailConnectorAllowReopenClosedFlag bool   `json:"emailConnectorAllowReopenClosedFlag"`
+	EmailConnectorReopenStatus          struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+	} `json:"emailConnectorReopenStatus,omitempty"`
+	EmailConnectorReopenResourcesFlag   bool   `json:"emailConnectorReopenResourcesFlag"`
+	EmailConnectorNewTicketNoMatchFlag  bool   `json:"emailConnectorNewTicketNoMatchFlag"`
+	EmailConnectorNeverReopenByDaysFlag bool   `json:"emailConnectorNeverReopenByDaysFlag"`
+	EmailConnectorReopenDaysLimit       int    `json:"emailConnectorReopenDaysLimit"`
+	UseMemberDisplayNameFlag            bool   `json:"useMemberDisplayNameFlag"`
+	SendToCCFlag                        bool   `json:"sendToCCFlag"`
+	AutoAssignTicketOwnerFlag           bool   `json:"autoAssignTicketOwnerFlag"`
+	ClosedLoopAllFlag                   bool   `json:"closedLoopAllFlag"`
+	AllSort                             string `json:"allSort"`
+	Info                                struct {
+		LastUpdated time.Time `json:"lastUpdated"`
+		UpdatedBy   string    `json:"updatedBy"`
+	} `json:"_info"`
+	ShowDependenciesFlag bool `json:"showDependenciesFlag,omitempty"`
+	ShowEstimatesFlag    bool `json:"showEstimatesFlag,omitempty"`
+	AutoCloseStatus      struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+	} `json:"autoCloseStatus,omitempty"`
+}
+
 //TimeEntryReference is a struct to hold the unmarshaled JSON data when making a call to the Service API
 //TBD: For some reason the Info struct contained in TimeEntryReference does get data when the JSON is unmarshaled into this struct.  The ID works fine
 type TimeEntryReference struct {
@@ -243,4 +434,77 @@ func (cw *Site) GetTicketConfigurationsByID(ticketID int) (*[]ConfigurationRefer
 	}
 
 	return configurationReference, nil
+}
+
+//GetServiceTeams returns a pointer to a slice of the service teams in Connectwise
+func (cw *Site) GetServiceTeams() (*[]ServiceTeam, error) {
+	req := cw.NewRequest("/service/teams", "GET", nil)
+	err := req.Do()
+	if err != nil {
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	serviceTeam := &[]ServiceTeam{}
+	err = json.Unmarshal(req.Body, serviceTeam)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	return serviceTeam, nil
+}
+
+//GetBoardTeams returns a pointer to a slice of the service teams in Connectwise
+func (cw *Site) GetBoardTeams(boardID int) (*[]BoardTeam, error) {
+	req := cw.NewRequest(fmt.Sprintf("/service/boards/%d/teams", boardID), "GET", nil)
+	err := req.Do()
+	if err != nil {
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	boardTeam := &[]BoardTeam{}
+	err = json.Unmarshal(req.Body, boardTeam)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	return boardTeam, nil
+}
+
+//GetBoardTeamByName returns a pointer to a board team in Connectwise
+func (cw *Site) GetBoardTeamByName(boardID int, teamName string) (*BoardTeam, error) {
+	req := cw.NewRequest(fmt.Sprintf("/service/boards/%d/teams", boardID), "GET", nil)
+	req.URLValues.Add("conditions", "name=\""+teamName+"\"")
+	err := req.Do()
+	if err != nil {
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	boardTeam := &[]BoardTeam{}
+	err = json.Unmarshal(req.Body, boardTeam)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	if len(*boardTeam) == 0 {
+		return nil, fmt.Errorf("connectsise returned no results for %s/%s", boardID, teamName)
+	}
+
+	return &(*boardTeam)[0], nil
+}
+
+//GetBoards returns a pointer to a slice of service boards
+func (cw *Site) GetBoards() (*[]Board, error) {
+	req := cw.NewRequest("/service/boards", "GET", nil)
+	err := req.Do()
+	if err != nil {
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	board := &[]Board{}
+	err = json.Unmarshal(req.Body, board)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	return board, nil
 }
