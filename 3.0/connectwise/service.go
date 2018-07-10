@@ -3,6 +3,7 @@ package connectwise
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"time"
 )
 
@@ -486,7 +487,7 @@ func (cw *Site) GetBoardTeamByName(boardID int, teamName string) (*BoardTeam, er
 	}
 
 	if len(*boardTeam) == 0 {
-		return nil, fmt.Errorf("connectsise returned no results for %s/%s", boardID, teamName)
+		return nil, fmt.Errorf("connectwise returned no results for %d/%s", boardID, teamName)
 	}
 
 	return &(*boardTeam)[0], nil
@@ -507,4 +508,33 @@ func (cw *Site) GetBoards() (*[]Board, error) {
 	}
 
 	return board, nil
+}
+
+//AssignTicketToTeam will set the team/id of a ticket
+func (cw *Site) AssignTicketToTeam(ticketID, teamID int) (*Ticket, error) {
+	patches := &[]Patch{}
+	patch := &Patch{
+		Op:    "replace",
+		Path:  "team/id",
+		Value: strconv.Itoa(teamID)}
+	*patches = append(*patches, *patch)
+
+	patchBody, err := json.Marshal(patches)
+	if err != nil {
+		return nil, fmt.Errorf("could not marhsal patch json to byte slice: %s", err)
+	}
+
+	req := cw.NewRequest(fmt.Sprintf("/service/tickets/%d", ticketID), "PATCH", patchBody)
+	err = req.Do()
+	if err != nil {
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	ticket := &Ticket{}
+	err = json.Unmarshal(req.Body, ticket)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	return ticket, nil
 }

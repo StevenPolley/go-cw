@@ -20,6 +20,13 @@ type Request struct {
 	PageSize   int
 }
 
+//Patch is a struct which holds the required fields to make a PATCH request
+type Patch struct {
+	Op    string `json:"op"`
+	Path  string `json:"path"`
+	Value string `json:"value"`
+}
+
 //NewRequest is a function which takes the mandatory fields to perform a request to the CW API and returns a pointer to a Request struct
 func (cw *Site) NewRequest(restAction, method string, body []byte) *Request {
 	req := Request{CW: cw, RestAction: restAction, Method: method, Body: body}

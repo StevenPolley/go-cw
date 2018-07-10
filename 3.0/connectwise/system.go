@@ -21,7 +21,8 @@ type Callback struct {
 	} `json:"_info"`
 }
 
-//GetMembers returns a slice of Member structs containing all the members (users) of connectwise
+//GetSystemMembers returns a slice of Member structs containing all the members (users) of connectwise
+//TBD finish this, I don't have permissions with my API key to see the JSON data
 func (cw *Site) GetSystemMembers() error {
 	req := cw.NewRequest("/system/members", "GET", nil)
 	err := req.Do()
@@ -29,8 +30,6 @@ func (cw *Site) GetSystemMembers() error {
 		return fmt.Errorf("request failed for %s: %s", req.RestAction, err)
 	}
 
-	fmt.Println("test")
-	fmt.Println(req.Body)
 	/*
 		callbacks := &[]Callback{}
 		err = json.Unmarshal(req.Body, callbacks)

@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+//Calendar is a struct to hold calendar data extracted from JSON
 type Calendar struct {
 	ID          int    `json:"id"`
 	Name        string `json:"name"`
@@ -32,6 +33,7 @@ type Calendar struct {
 	} `json:"_info"`
 }
 
+//ScheduleEntry is a struct to hold extracted JSON data
 type ScheduleEntry struct {
 	ID       int    `json:"id"`
 	ObjectID int    `json:"objectId"`
