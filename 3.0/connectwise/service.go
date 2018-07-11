@@ -406,6 +406,18 @@ type Board struct {
 	} `json:"autoCloseStatus,omitempty"`
 }
 
+type Source struct {
+	ID          int    `json:"id"`
+	Name        string `json:"name"`
+	DefaultFlag bool   `json:"defaultFlag"`
+	Info        struct {
+		LastUpdated time.Time `json:"lastUpdated"`
+		UpdatedBy   string    `json:"updatedBy"`
+	} `json:"_info"`
+	EnteredBy   string    `json:"enteredBy"`
+	DateEntered time.Time `json:"dateEntered"`
+}
+
 //TimeEntryReference is a struct to hold the unmarshaled JSON data when making a call to the Service API
 //TBD: For some reason the Info struct contained in TimeEntryReference does get data when the JSON is unmarshaled into this struct.  The ID works fine
 type TimeEntryReference struct {
@@ -460,6 +472,23 @@ func (cw *Site) GetTicketTimeEntriesByID(ticketID int) (*[]TimeEntryReference, e
 	}
 
 	return timeEntryReference, nil
+}
+
+//TicketTimeEntryCount returns the number of time entries on a ticket in ConnectWise
+func (cw *Site) TicketTimeEntryCount(ticketID int) (int, error) {
+	req := cw.NewRequest(fmt.Sprintf("/service/tickets/%d/timeentries/count", ticketID), "GET", nil)
+	err := req.Do()
+	if err != nil {
+		return 0, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	count := &Count{}
+	err = json.Unmarshal(req.Body, count)
+	if err != nil {
+		return 0, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	return count.Count, nil
 }
 
 //GetTicketConfigurationsByID expects a ticket ID and returns a pointer to a slice of the configurations attached to the ticket
@@ -596,4 +625,21 @@ func (cw *Site) AssignTicketToTeam(ticketID, teamID int) (*Ticket, error) {
 	}
 
 	return ticket, nil
+}
+
+//GetSources will return a pointer to a slice of sources.  Sources are referring to Ticket.Source field
+func (cw *Site) GetSources() (*[]Source, error) {
+	req := cw.NewRequest("/service/sources", "GET", nil)
+	err := req.Do()
+	if err != nil {
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	source := &[]Source{}
+	err = json.Unmarshal(req.Body, source)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	return source, nil
 }
