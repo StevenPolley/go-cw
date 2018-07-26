@@ -35,7 +35,7 @@ func (cw *Site) NewRequest(restAction, method string, body []byte) *Request {
 }
 
 //NewPaginationRequest is a method which takes in the mandatory fields to paginate
-//TBD - finish this
+//TBD - finish this.  The last thing I remember was running into issues with static typing
 func (cw *Site) NewPaginationRequest(restAction, method string, body []byte, pageSize, pageNumber int) (*[]Company, error) {
 
 	req := cw.NewRequest("/company/companies", "GET", nil)
