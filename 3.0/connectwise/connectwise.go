@@ -3,12 +3,19 @@ package connectwise
 import (
 	"encoding/base64"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"net/url"
+	"strings"
 )
 
 //Site is a stuct containing the URL of the site and the API authorization token in the format that CW expects it.
 type Site struct {
-	Site string
-	Auth string
+	Site           string
+	AuthAPIKey     string //Preferable authentication method
+	AuthUsername   string // User for user impersonation
+	AuthMemberHash string //Used for user impersonation
+	CompanyName    string //Used for user impersonation
 }
 
 //Count is a struct used for unmarshalling JSON data when using the Count endpoints in Connectwise (eg: counting number of companies)
@@ -23,7 +30,61 @@ func NewSite(site string, publicKey string, privateKey string, company string) *
 	authString = base64.StdEncoding.EncodeToString([]byte(authString))
 	authString = fmt.Sprintf("Basic %s", authString)
 
-	cwSite := Site{Site: site, Auth: authString}
+	cwSite := Site{Site: site, AuthAPIKey: authString}
 
 	return &cwSite
+}
+
+//NewSiteUserImpersonation is similar to NewSite but is used for user impersonation and instead of an API key takes the username and password
+func NewSiteUserImpersonation(site string, username string, password string, company string) (*Site, error) {
+
+	//Need to post formdata to https://ndconnect.nextdigital.ca/v4_6_release/login/login.aspx
+	//username
+	//password
+	//companyname
+
+	//Will then receive a hash
+
+	authBaseURL := strings.TrimSuffix(site, "/apis/3.0")
+	authURL, err := url.Parse(authBaseURL)
+	if err != nil {
+		return nil, fmt.Errorf("could not build url %s: %s", authBaseURL, err)
+	}
+	authURL.Path += "/login/login.aspx"
+
+	client := &http.Client{}
+
+	authReq, err := http.NewRequest("POST", authURL.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("could not construct http request: %s", err)
+	}
+
+	form := url.Values{}
+	form.Add("username", username)
+	form.Add("password", password)
+	form.Add("companyname", company)
+	authReq.PostForm = form
+
+	authReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	resp, err := client.Do(authReq)
+	if err != nil {
+		return nil, fmt.Errorf("could not perform http authentication request: %s", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("cw api returned unexpected http status %d - %s", resp.StatusCode, resp.Status)
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("could not read response body of request")
+	}
+
+	if string(body) == "" {
+		return nil, fmt.Errorf("could not authenticate with connectwise as %s: authentication request sent to connectwise, but response body was empty", username)
+	}
+
+	cwSite := Site{Site: site, AuthUsername: username, AuthMemberHash: string(body), CompanyName: company}
+
+	return &cwSite, nil
 }
