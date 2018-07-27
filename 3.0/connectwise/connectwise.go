@@ -38,13 +38,7 @@ func NewSite(site string, publicKey string, privateKey string, company string) *
 //NewSiteUserImpersonation is similar to NewSite but is used for user impersonation and instead of an API key takes the username and password
 func NewSiteUserImpersonation(site string, username string, password string, company string) (*Site, error) {
 
-	//Need to post formdata to https://ndconnect.nextdigital.ca/v4_6_release/login/login.aspx
-	//username
-	//password
-	//companyname
-
-	//Will then receive a hash
-
+	//We must retrieve a user hash which is good for 4 hours
 	authBaseURL := strings.TrimSuffix(site, "/apis/3.0")
 	authURL, err := url.Parse(authBaseURL)
 	if err != nil {
@@ -52,18 +46,17 @@ func NewSiteUserImpersonation(site string, username string, password string, com
 	}
 	authURL.Path += "/login/login.aspx"
 
-	client := &http.Client{}
-
-	authReq, err := http.NewRequest("POST", authURL.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("could not construct http request: %s", err)
-	}
-
 	form := url.Values{}
 	form.Add("username", username)
 	form.Add("password", password)
 	form.Add("companyname", company)
-	authReq.PostForm = form
+
+	client := &http.Client{}
+
+	authReq, err := http.NewRequest("POST", authURL.String(), strings.NewReader(form.Encode()))
+	if err != nil {
+		return nil, fmt.Errorf("could not construct http request: %s", err)
+	}
 
 	authReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	resp, err := client.Do(authReq)
@@ -82,6 +75,10 @@ func NewSiteUserImpersonation(site string, username string, password string, com
 
 	if string(body) == "" {
 		return nil, fmt.Errorf("could not authenticate with connectwise as %s: authentication request sent to connectwise, but response body was empty", username)
+	}
+
+	if string(body) == "CompanyFAIL" {
+		return nil, fmt.Errorf("could not authenticate with connectwise as %s: connectwise response body is %s", username, string(body))
 	}
 
 	cwSite := Site{Site: site, AuthUsername: username, AuthMemberHash: string(body), CompanyName: company}
