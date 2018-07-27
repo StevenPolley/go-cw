@@ -80,9 +80,12 @@ func (req *Request) Do() error {
 	if req.CW.AuthAPIKey != "" {
 		httpreq.Header.Set("Authorization", req.CW.AuthAPIKey)
 	} else { //User impersonation
-		httpreq.Header.Set("Cookie", fmt.Sprintf("companyName=%s", req.CW.CompanyName))
-		httpreq.Header.Set("Cookie", fmt.Sprintf("memberHash=%s", req.CW.AuthMemberHash))
-		httpreq.Header.Set("Cookie", fmt.Sprintf("MemberID=%s", req.CW.AuthUsername))
+		cookieCompanyName := http.Cookie{Name: "companyName", Value: req.CW.CompanyName}
+		cookieMemberHash := http.Cookie{Name: "memberHash", Value: req.CW.AuthMemberHash}
+		cookieMemberID := http.Cookie{Name: "memberID", Value: req.CW.AuthUsername}
+		httpreq.AddCookie(&cookieCompanyName)
+		httpreq.AddCookie(&cookieMemberHash)
+		httpreq.AddCookie(&cookieMemberID)
 	}
 	httpreq.Header.Set("Content-Type", "application/json")
 	resp, err := client.Do(httpreq)
