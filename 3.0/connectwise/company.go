@@ -161,6 +161,44 @@ type CompanyStatus struct {
 	} `json:"_info"`
 }
 
+type CompanyTeamMember struct {
+	ID      int `json:"id"`
+	Company struct {
+		ID         int    `json:"id"`
+		Identifier string `json:"identifier"`
+		Name       string `json:"name"`
+		Info       struct {
+			CompanyHref string `json:"company_href"`
+		} `json:"_info"`
+	} `json:"company"`
+	TeamRole struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+		Info struct {
+			TeamroleHref string `json:"teamrole_href"`
+		} `json:"_info"`
+	} `json:"teamRole"`
+	LocationID     int `json:"locationId"`
+	BusinessUnitID int `json:"businessUnitId"`
+	Member         struct {
+		ID         int    `json:"id"`
+		Identifier string `json:"identifier"`
+		Name       string `json:"name"`
+		Info       struct {
+			MemberHref string `json:"member_href"`
+		} `json:"_info"`
+	} `json:"member"`
+	AccountManagerFlag bool `json:"accountManagerFlag"`
+	TechFlag           bool `json:"techFlag"`
+	SalesFlag          bool `json:"salesFlag"`
+	Info               struct {
+		LastUpdated time.Time `json:"lastUpdated"`
+		UpdatedBy   string    `json:"updatedBy"`
+		DateEntered time.Time `json:"dateEntered"`
+		EnteredBy   string    `json:"enteredBy"`
+	} `json:"_info"`
+}
+
 //CompanyCount returns the number of companies in ConnectWise
 func (cw *Site) CompanyCount() (int, error) {
 	req := cw.NewRequest("/company/companies/count", "GET", nil)
@@ -234,4 +272,21 @@ func (cw *Site) GetCompanyStatuses() (*[]CompanyStatus, error) {
 	}
 
 	return costat, nil
+}
+
+func (cw *Site) GetCompanyTeamMembers(companyID int) (*[]CompanyTeamMember, error) {
+	req := cw.NewRequest(fmt.Sprintf("/company/companies/%d/teams", companyID), "GET", nil)
+	err := req.Do()
+	if err != nil {
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	teamMembers := &[]CompanyTeamMember{}
+	err = json.Unmarshal(req.Body, teamMembers)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	return teamMembers, nil
+
 }
