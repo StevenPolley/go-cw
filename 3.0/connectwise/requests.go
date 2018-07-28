@@ -116,7 +116,7 @@ func (cw *Site) BuildURL(restAction string) (*url.URL, error) {
 //TBD: Needs to accept 201 and 204 (returned for Create and Delete operations)
 func getHTTPResponseBody(resp *http.Response) ([]byte, error) {
 	if (resp.StatusCode != http.StatusOK) && (resp.StatusCode != http.StatusCreated) && (resp.StatusCode != http.StatusNoContent) {
-		return nil, fmt.Errorf("cw api returned unexpected http status %d - %s", resp.StatusCode, resp.Status)
+		return nil, fmt.Errorf("cw api returned unexpected http status - %s", resp.Status)
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
