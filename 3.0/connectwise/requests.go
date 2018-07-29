@@ -20,8 +20,8 @@ type Request struct {
 	PageSize   int
 }
 
-//Patch is a struct which holds the required fields to make a PATCH request
-type Patch struct {
+//PatchString is a struct which holds the required fields to make a PATCH request
+type PatchString struct {
 	Op    string `json:"op"`
 	Path  string `json:"path"`
 	Value string `json:"value"`

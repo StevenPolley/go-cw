@@ -600,8 +600,8 @@ func (cw *Site) GetBoards() (*[]Board, error) {
 
 //AssignTicketToTeam will set the team/id of a ticket
 func (cw *Site) AssignTicketToTeam(ticketID, teamID int) (*Ticket, error) {
-	patches := &[]Patch{}
-	patch := &Patch{
+	patches := &[]PatchString{}
+	patch := &PatchString{
 		Op:    "replace",
 		Path:  "team/id",
 		Value: strconv.Itoa(teamID)}
