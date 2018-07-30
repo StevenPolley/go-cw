@@ -260,6 +260,7 @@ type Ticket struct {
 		Type             string `json:"type"`
 		EntryMethod      string `json:"entryMethod"`
 		NumberOfDecimals int    `json:"numberOfDecimals"`
+		Value            bool   `json:"value"`
 	} `json:"customFields"`
 	RequiredDate time.Time `json:"requiredDate,omitempty"`
 	BudgetHours  float64   `json:"budgetHours,omitempty"`
