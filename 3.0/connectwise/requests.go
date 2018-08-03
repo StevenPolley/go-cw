@@ -64,7 +64,8 @@ func (req *Request) Do() error {
 		return fmt.Errorf("could not build url %s: %s", req.RestAction, err)
 	}
 
-	//If pagination parameters are not being specified, then don't include them in the URL - not all endpoints will accept page and pagesize, they will 400 - bad request
+	//If pagination parameters are not being specified, then don't include them in the URL
+	//Not all endpoints will accept page and pagesize, they return http status 400 - bad request
 	if req.Page == 0 || req.PageSize == 0 {
 		cwurl.RawQuery = req.URLValues.Encode()
 	} else {
@@ -77,9 +78,9 @@ func (req *Request) Do() error {
 	if err != nil {
 		return fmt.Errorf("could not construct http request: %s", err)
 	}
-	if req.CW.AuthAPIKey != "" {
+	if req.CW.AuthAPIKey != "" { //Standard API keys
 		httpreq.Header.Set("Authorization", req.CW.AuthAPIKey)
-	} else { //User impersonation
+	} else { //User impersonation using username + password
 		cookieCompanyName := http.Cookie{Name: "companyName", Value: req.CW.CompanyName}
 		cookieMemberHash := http.Cookie{Name: "memberHash", Value: req.CW.AuthMemberHash}
 		cookieMemberID := http.Cookie{Name: "memberID", Value: req.CW.AuthUsername}
