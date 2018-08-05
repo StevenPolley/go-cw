@@ -260,7 +260,8 @@ type Ticket struct {
 		Type             string `json:"type"`
 		EntryMethod      string `json:"entryMethod"`
 		NumberOfDecimals int    `json:"numberOfDecimals"`
-		Value            bool   `json:"value"`
+		//It's not always a string.  I need to somehow *puts on sunglasses*... reflect on this as this is a dynamic type.
+		Value string `json:"value"`
 	} `json:"customFields"`
 	RequiredDate time.Time `json:"requiredDate,omitempty"`
 	BudgetHours  float64   `json:"budgetHours,omitempty"`
