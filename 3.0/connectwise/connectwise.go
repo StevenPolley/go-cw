@@ -13,9 +13,10 @@ import (
 type Site struct {
 	Site           string
 	AuthAPIKey     string //Preferable authentication method
+	CompanyName    string //Used for user impersonation, but collected for API key as well so it can be accessed publicly later on if required
 	AuthUsername   string // User for user impersonation
 	AuthMemberHash string //Used for user impersonation
-	CompanyName    string //Used for user impersonation
+
 }
 
 //Count is a struct used for unmarshalling JSON data when using the Count endpoints in Connectwise (eg: counting number of companies)
@@ -30,7 +31,7 @@ func NewSite(site string, publicKey string, privateKey string, company string) *
 	authString = base64.StdEncoding.EncodeToString([]byte(authString))
 	authString = fmt.Sprintf("Basic %s", authString)
 
-	cwSite := Site{Site: site, AuthAPIKey: authString}
+	cwSite := Site{Site: site, AuthAPIKey: authString, CompanyName: company}
 
 	return &cwSite
 }
