@@ -100,3 +100,21 @@ func (cw *Site) GetTimeEntryByID(timeEntryID int) (*TimeEntry, error) {
 
 	return timeEntry, nil
 }
+
+func (cw *Site) GetTimeEntriesByMember(memberIdentifier string) (*[]TimeEntry, error) {
+	req := cw.NewRequest("/time/entries", "GET", nil)
+	req.URLValues.Add("conditions", "member/identifier=\""+memberIdentifier+"\"")
+	req.URLValues.Add("orderBy", "id desc")
+	err := req.Do()
+	if err != nil {
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	timeEntries := &[]TimeEntry{}
+	err = json.Unmarshal(req.Body, timeEntries)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	return timeEntries, nil
+}
