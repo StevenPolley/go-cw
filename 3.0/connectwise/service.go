@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
-	"time"
 )
 
 //ServiceTeam is a struct to hold the unmarshaled JSON data when making a call to the service API
@@ -36,10 +35,10 @@ type ServiceTeam struct {
 	} `json:"department"`
 	DeleteNotifyFlag bool `json:"deleteNotifyFlag"`
 	Info             struct {
-		LastUpdated time.Time `json:"lastUpdated"`
-		UpdatedBy   string    `json:"updatedBy"`
-		DateEntered time.Time `json:"dateEntered"`
-		EnteredBy   string    `json:"enteredBy"`
+		LastUpdated string `json:"lastUpdated"`
+		UpdatedBy   string `json:"updatedBy"`
+		DateEntered string `json:"dateEntered"`
+		EnteredBy   string `json:"enteredBy"`
 	} `json:"_info"`
 }
 
@@ -62,8 +61,8 @@ type BoardTeam struct {
 	LocationID           int   `json:"locationId"`
 	BusinessUnitID       int   `json:"businessUnitId"`
 	Info                 struct {
-		LastUpdated time.Time `json:"lastUpdated"`
-		UpdatedBy   string    `json:"updatedBy"`
+		LastUpdated string `json:"lastUpdated"`
+		UpdatedBy   string `json:"updatedBy"`
 	} `json:"_info"`
 }
 
@@ -102,10 +101,10 @@ type BoardStatus struct {
 		} `json:"_info"`
 	} `json:"emailTemplate,omitempty"`
 	Info struct {
-		LastUpdated time.Time `json:"lastUpdated"`
-		UpdatedBy   string    `json:"updatedBy"`
-		DateEntered time.Time `json:"dateEntered"`
-		EnteredBy   string    `json:"enteredBy"`
+		LastUpdated string `json:"lastUpdated"`
+		UpdatedBy   string `json:"updatedBy"`
+		DateEntered string `json:"dateEntered"`
+		EnteredBy   string `json:"enteredBy"`
 	} `json:"_info"`
 }
 
@@ -189,42 +188,42 @@ type Ticket struct {
 			AgreementHref string `json:"agreement_href"`
 		} `json:"_info"`
 	} `json:"agreement,omitempty"`
-	Severity                   string    `json:"severity"`
-	Impact                     string    `json:"impact"`
-	AllowAllClientsPortalView  bool      `json:"allowAllClientsPortalView"`
-	CustomerUpdatedFlag        bool      `json:"customerUpdatedFlag"`
-	AutomaticEmailContactFlag  bool      `json:"automaticEmailContactFlag"`
-	AutomaticEmailResourceFlag bool      `json:"automaticEmailResourceFlag"`
-	AutomaticEmailCcFlag       bool      `json:"automaticEmailCcFlag"`
-	ClosedDate                 time.Time `json:"closedDate"`
-	ClosedBy                   string    `json:"closedBy"`
-	ClosedFlag                 bool      `json:"closedFlag"`
-	DateEntered                time.Time `json:"dateEntered"`
-	EnteredBy                  string    `json:"enteredBy"`
-	ActualHours                float64   `json:"actualHours,omitempty"`
-	Approved                   bool      `json:"approved"`
-	EstimatedExpenseCost       float64   `json:"estimatedExpenseCost"`
-	EstimatedExpenseRevenue    float64   `json:"estimatedExpenseRevenue"`
-	EstimatedProductCost       float64   `json:"estimatedProductCost"`
-	EstimatedProductRevenue    float64   `json:"estimatedProductRevenue"`
-	EstimatedTimeCost          float64   `json:"estimatedTimeCost"`
-	EstimatedTimeRevenue       float64   `json:"estimatedTimeRevenue"`
-	BillingMethod              string    `json:"billingMethod"`
-	SubBillingMethod           string    `json:"subBillingMethod"`
-	DateResolved               time.Time `json:"dateResolved"`
-	DateResplan                time.Time `json:"dateResplan"`
-	DateResponded              time.Time `json:"dateResponded"`
-	ResolveMinutes             int       `json:"resolveMinutes"`
-	ResPlanMinutes             int       `json:"resPlanMinutes"`
-	RespondMinutes             int       `json:"respondMinutes"`
-	IsInSLA                    bool      `json:"isInSla"`
-	HasChildTicket             bool      `json:"hasChildTicket"`
-	BillTime                   string    `json:"billTime"`
-	BillExpenses               string    `json:"billExpenses"`
-	BillProducts               string    `json:"billProducts"`
-	LocationID                 int       `json:"locationId"`
-	BusinessUnitID             int       `json:"businessUnitId"`
-	MobileGUID                 string    `json:"mobileGuid"`
+	Severity                   string  `json:"severity"`
+	Impact                     string  `json:"impact"`
+	AllowAllClientsPortalView  bool    `json:"allowAllClientsPortalView"`
+	CustomerUpdatedFlag        bool    `json:"customerUpdatedFlag"`
+	AutomaticEmailContactFlag  bool    `json:"automaticEmailContactFlag"`
+	AutomaticEmailResourceFlag bool    `json:"automaticEmailResourceFlag"`
+	AutomaticEmailCcFlag       bool    `json:"automaticEmailCcFlag"`
+	ClosedDate                 string  `json:"closedDate"`
+	ClosedBy                   string  `json:"closedBy"`
+	ClosedFlag                 bool    `json:"closedFlag"`
+	DateEntered                string  `json:"dateEntered"`
+	EnteredBy                  string  `json:"enteredBy"`
+	ActualHours                float64 `json:"actualHours,omitempty"`
+	Approved                   bool    `json:"approved"`
+	EstimatedExpenseCost       float64 `json:"estimatedExpenseCost"`
+	EstimatedExpenseRevenue    float64 `json:"estimatedExpenseRevenue"`
+	EstimatedProductCost       float64 `json:"estimatedProductCost"`
+	EstimatedProductRevenue    float64 `json:"estimatedProductRevenue"`
+	EstimatedTimeCost          float64 `json:"estimatedTimeCost"`
+	EstimatedTimeRevenue       float64 `json:"estimatedTimeRevenue"`
+	BillingMethod              string  `json:"billingMethod"`
+	SubBillingMethod           string  `json:"subBillingMethod"`
+	DateResolved               string  `json:"dateResolved"`
+	DateResplan                string  `json:"dateResplan"`
+	DateResponded              string  `json:"dateResponded"`
+	ResolveMinutes             int     `json:"resolveMinutes"`
+	ResPlanMinutes             int     `json:"resPlanMinutes"`
+	RespondMinutes             int     `json:"respondMinutes"`
+	IsInSLA                    bool    `json:"isInSla"`
+	HasChildTicket             bool    `json:"hasChildTicket"`
+	BillTime                   string  `json:"billTime"`
+	BillExpenses               string  `json:"billExpenses"`
+	BillProducts               string  `json:"billProducts"`
+	LocationID                 int     `json:"locationId"`
+	BusinessUnitID             int     `json:"businessUnitId"`
+	MobileGUID                 string  `json:"mobileGuid"`
 	SLA                        struct {
 		ID   int    `json:"id"`
 		Name string `json:"name"`
@@ -242,17 +241,17 @@ type Ticket struct {
 		} `json:"_info"`
 	} `json:"currency"`
 	Info struct {
-		LastUpdated         time.Time `json:"lastUpdated"`
-		UpdatedBy           string    `json:"updatedBy"`
-		ActivitiesHref      string    `json:"activities_href"`
-		ScheduleentriesHref string    `json:"scheduleentries_href"`
-		DocumentsHref       string    `json:"documents_href"`
-		ConfigurationsHref  string    `json:"configurations_href"`
-		TasksHref           string    `json:"tasks_href"`
-		NotesHref           string    `json:"notes_href"`
-		ProductsHref        string    `json:"products_href"`
-		TimeentriesHref     string    `json:"timeentries_href"`
-		ExpenseEntriesHref  string    `json:"expenseEntries_href"`
+		LastUpdated         string `json:"lastUpdated"`
+		UpdatedBy           string `json:"updatedBy"`
+		ActivitiesHref      string `json:"activities_href"`
+		ScheduleentriesHref string `json:"scheduleentries_href"`
+		DocumentsHref       string `json:"documents_href"`
+		ConfigurationsHref  string `json:"configurations_href"`
+		TasksHref           string `json:"tasks_href"`
+		NotesHref           string `json:"notes_href"`
+		ProductsHref        string `json:"products_href"`
+		TimeentriesHref     string `json:"timeentries_href"`
+		ExpenseEntriesHref  string `json:"expenseEntries_href"`
 	} `json:"_info"`
 	CustomFields []struct {
 		ID               int    `json:"id"`
@@ -263,9 +262,9 @@ type Ticket struct {
 		//It's not always a string.  I need to somehow *puts on sunglasses*... reflect on this as this is a dynamic type.
 		Value string `json:"value"`
 	} `json:"customFields"`
-	RequiredDate time.Time `json:"requiredDate,omitempty"`
-	BudgetHours  float64   `json:"budgetHours,omitempty"`
-	AddressLine2 string    `json:"addressLine2,omitempty"`
+	RequiredDate string  `json:"requiredDate,omitempty"`
+	BudgetHours  float64 `json:"budgetHours,omitempty"`
+	AddressLine2 string  `json:"addressLine2,omitempty"`
 	Contact      struct {
 		ID   int    `json:"id"`
 		Name string `json:"name"`
@@ -275,6 +274,39 @@ type Ticket struct {
 		} `json:"_info"`
 	} `json:"contact,omitempty"`
 	ContactPhoneExtension string `json:"contactPhoneExtension,omitempty"`
+}
+
+type TicketNote struct {
+	ID                    int    `json:"id"`
+	TicketID              int    `json:"ticketId"`
+	Text                  string `json:"text"`
+	DetailDescriptionFlag bool   `json:"detailDescriptionFlag"`
+	InternalAnalysisFlag  bool   `json:"internalAnalysisFlag"`
+	ResolutionFlag        bool   `json:"resolutionFlag"`
+	Contact               struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+		Info struct {
+			ContactHref string `json:"contact_href"`
+		} `json:"_info"`
+	} `json:"contact,omitempty"`
+	DateCreated  string `json:"dateCreated"`
+	CreatedBy    string `json:"createdBy"`
+	InternalFlag bool   `json:"internalFlag"`
+	ExternalFlag bool   `json:"externalFlag"`
+	Info         struct {
+		LastUpdated string `json:"lastUpdated"`
+		UpdatedBy   string `json:"updatedBy"`
+	} `json:"_info"`
+	Member struct {
+		ID         int    `json:"id"`
+		Identifier string `json:"identifier"`
+		Name       string `json:"name"`
+		Info       struct {
+			MemberHref string `json:"member_href"`
+			ImageHref  string `json:"image_href"`
+		} `json:"_info"`
+	} `json:"member,omitempty"`
 }
 
 //Board is a struct to hold the unmarshaled JSON data when making a call to the Service API
@@ -397,8 +429,8 @@ type Board struct {
 	ClosedLoopAllFlag                   bool   `json:"closedLoopAllFlag"`
 	AllSort                             string `json:"allSort"`
 	Info                                struct {
-		LastUpdated time.Time `json:"lastUpdated"`
-		UpdatedBy   string    `json:"updatedBy"`
+		LastUpdated string `json:"lastUpdated"`
+		UpdatedBy   string `json:"updatedBy"`
 	} `json:"_info"`
 	ShowDependenciesFlag bool `json:"showDependenciesFlag,omitempty"`
 	ShowEstimatesFlag    bool `json:"showEstimatesFlag,omitempty"`
@@ -413,11 +445,11 @@ type Source struct {
 	Name        string `json:"name"`
 	DefaultFlag bool   `json:"defaultFlag"`
 	Info        struct {
-		LastUpdated time.Time `json:"lastUpdated"`
-		UpdatedBy   string    `json:"updatedBy"`
+		LastUpdated string `json:"lastUpdated"`
+		UpdatedBy   string `json:"updatedBy"`
 	} `json:"_info"`
-	EnteredBy   string    `json:"enteredBy"`
-	DateEntered time.Time `json:"dateEntered"`
+	EnteredBy   string `json:"enteredBy"`
+	DateEntered string `json:"dateEntered"`
 }
 
 //TimeEntryReference is a struct to hold the unmarshaled JSON data when making a call to the Service API
@@ -644,4 +676,20 @@ func (cw *Site) GetSources() (*[]Source, error) {
 	}
 
 	return source, nil
+}
+
+func (cw *Site) GetTicketNotes(ticketID int) (*[]TicketNote, error) {
+	req := cw.NewRequest(fmt.Sprintf("/service/tickets/%d/notes", ticketID), "GET", nil)
+	err := req.Do()
+	if err != nil {
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	ticketNotes := &[]TicketNote{}
+	err = json.Unmarshal(req.Body, ticketNotes)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	return ticketNotes, nil
 }
