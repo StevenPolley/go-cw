@@ -183,15 +183,11 @@ func (cw *Site) PostTimeEntry(timeEntry *TimeEntryPost) (*TimeEntry, error) {
 		return nil, fmt.Errorf("could not marshal timeEntry struct to json bytes: %s", err)
 	}
 
-	fmt.Println(string(js))
-
 	req := cw.NewRequest("/time/entries", "POST", js)
 	err = req.Do()
 	if err != nil {
 		return nil, fmt.Errorf("post request failed for %s: %s", req.RestAction, err)
 	}
-
-	fmt.Println(string(req.Body))
 
 	te := &TimeEntry{}
 	err = json.Unmarshal(req.Body, te)
