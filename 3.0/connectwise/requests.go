@@ -116,13 +116,15 @@ func (cw *Site) BuildURL(restAction string) (*url.URL, error) {
 //Checks for HTTP errors, and if all looks good, returns the body of the HTTP response as a byte slice
 //TBD: Needs to accept 201 and 204 (returned for Create and Delete operations)
 func getHTTPResponseBody(resp *http.Response) ([]byte, error) {
-	if (resp.StatusCode != http.StatusOK) && (resp.StatusCode != http.StatusCreated) && (resp.StatusCode != http.StatusNoContent) {
-		return nil, fmt.Errorf("cw api returned unexpected http status - %s", resp.Status)
-	}
+
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("could not read response body of request")
+	}
+
+	if (resp.StatusCode != http.StatusOK) && (resp.StatusCode != http.StatusCreated) && (resp.StatusCode != http.StatusNoContent) {
+		return nil, fmt.Errorf("cw api returned unexpected http status - %s: response body is '%s'", resp.Status, string(body))
 	}
 
 	return body, nil
