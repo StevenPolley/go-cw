@@ -661,6 +661,35 @@ func (cw *Site) AssignTicketToTeam(ticketID, teamID int) (*Ticket, error) {
 	return ticket, nil
 }
 
+//SetTicketStatus will set the status on a ticket to the one provided
+func (cw *Site) SetTicketStatus(ticketID, statusID int) (*Ticket, error) {
+	patches := &[]PatchString{}
+	patch := &PatchString{
+		Op:    "replace",
+		Path:  "status/id",
+		Value: strconv.Itoa(statusID)}
+	*patches = append(*patches, *patch)
+
+	patchBody, err := json.Marshal(patches)
+	if err != nil {
+		return nil, fmt.Errorf("could not marhsal patch json to byte slice: %s", err)
+	}
+
+	req := cw.NewRequest(fmt.Sprintf("/service/tickets/%d", ticketID), "PATCH", patchBody)
+	err = req.Do()
+	if err != nil {
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	ticket := &Ticket{}
+	err = json.Unmarshal(req.Body, ticket)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	return ticket, nil
+}
+
 //GetSources will return a pointer to a slice of sources.  Sources are referring to Ticket.Source field
 func (cw *Site) GetSources() (*[]Source, error) {
 	req := cw.NewRequest("/service/sources", "GET", nil)
@@ -678,6 +707,7 @@ func (cw *Site) GetSources() (*[]Source, error) {
 	return source, nil
 }
 
+//GetTicketNotes will accept a ticketID and return a slice of TicketNote.
 func (cw *Site) GetTicketNotes(ticketID int) (*[]TicketNote, error) {
 	req := cw.NewRequest(fmt.Sprintf("/service/tickets/%d/notes", ticketID), "GET", nil)
 	err := req.Do()
