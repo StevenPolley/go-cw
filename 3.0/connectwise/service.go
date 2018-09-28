@@ -681,6 +681,8 @@ func (cw *Site) SetTicketStatus(ticketID, statusID int) (*Ticket, error) {
 		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
 	}
 
+	fmt.Println(string(req.Body))
+
 	ticket := &Ticket{}
 	err = json.Unmarshal(req.Body, ticket)
 	if err != nil {
