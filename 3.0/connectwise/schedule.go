@@ -137,3 +137,19 @@ func (cw *Site) GetScheduleEntriesOnDay(day time.Time) (*[]ScheduleEntry, error)
 
 	return scheduleEntry, nil
 }
+
+func (cw *Site) GetScheduleEntryByID(scheduleEntryID int) (*ScheduleEntry, error) {
+	req := cw.NewRequest(fmt.Sprintf("/schedule/entries/%d", scheduleEntryID), "GET", nil)
+	err := req.Do()
+	if err != nil {
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	scheduleEntry := &ScheduleEntry{}
+	err = json.Unmarshal(req.Body, scheduleEntry)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	return scheduleEntry, nil
+}
