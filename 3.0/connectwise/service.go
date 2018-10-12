@@ -309,6 +309,14 @@ type TicketNote struct {
 	} `json:"member,omitempty"`
 }
 
+type TicketScheduleEntry struct {
+	ID          int    `json:"id"`
+	Description string `json:"description"`
+	Info        struct {
+		ScheduleHref string `json:"schedule_href"`
+	} `json:"_info"`
+}
+
 //Board is a struct to hold the unmarshaled JSON data when making a call to the Service API
 type Board struct {
 	ID       int    `json:"id"`
@@ -473,6 +481,13 @@ type ConfigurationReference struct {
 	} `json:"_info"`
 }
 
+type TicketMerge struct {
+	MergeTicketIDs []int `json:"mergeTicketIDs"`
+	Status         struct {
+		ID int `json:"id"`
+	} `json:"status"`
+}
+
 //GetTicketByID expects a ticket ID and returns a pointer to a Ticket struct
 func (cw *Site) GetTicketByID(ticketID int) (*Ticket, error) {
 	req := cw.NewRequest(fmt.Sprintf("/service/tickets/%d", ticketID), "GET", nil)
@@ -488,6 +503,22 @@ func (cw *Site) GetTicketByID(ticketID int) (*Ticket, error) {
 	}
 
 	return ticket, nil
+}
+
+func (cw *Site) GetTicketScheduleEntriesByID(ticketID int) (*[]TicketScheduleEntry, error) {
+	req := cw.NewRequest(fmt.Sprintf("/service/tickets/%d/scheduleentries", ticketID), "GET", nil)
+	err := req.Do()
+	if err != nil {
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	ticketScheduleEntries := &[]TicketScheduleEntry{}
+	err = json.Unmarshal(req.Body, ticketScheduleEntries)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	return ticketScheduleEntries, nil
 }
 
 //GetTicketTimeEntriesByID expects a ticket ID and returns a pointer a to a slice of TimeEntryReference's, all the time entries attached to that ticket
@@ -659,6 +690,52 @@ func (cw *Site) AssignTicketToTeam(ticketID, teamID int) (*Ticket, error) {
 	}
 
 	return ticket, nil
+}
+
+//AssignTicketToMember will create a new schedule entry for the member and specify the ticket as the object
+func (cw *Site) AssignTicketToMember(ticketID, memberID int) (*ScheduleEntry, error) {
+	scheduleEntry := &ScheduleEntry{}
+	scheduleEntry.ObjectID = ticketID
+	scheduleEntry.Member.ID = memberID
+	scheduleEntry.Type.ID = 4 //TBD: This should not be here lol
+
+	jsonScheduleEntry, err := json.Marshal(scheduleEntry)
+	if err != nil {
+		return nil, fmt.Errorf("could not marshal json data: %s", err)
+	}
+
+	req := cw.NewRequest("/schedule/entries", "POST", jsonScheduleEntry)
+	err = req.Do()
+	if err != nil {
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	scheduleEntry = &ScheduleEntry{}
+	err = json.Unmarshal(req.Body, scheduleEntry)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	return scheduleEntry, nil
+}
+
+//AssignTicketToMember will create a new schedule entry for the member and specify the ticket as the object
+func (cw *Site) TicketMerge(mainTicketID int, mergedTicketIDs []int, mergedTicketStatusID int) error {
+	ticketMerge := &TicketMerge{}
+	ticketMerge.MergeTicketIDs = mergedTicketIDs
+	ticketMerge.Status.ID = mergedTicketStatusID
+
+	ticketMergeJSON, err := json.Marshal(ticketMerge)
+	if err != nil {
+		return fmt.Errorf("could not marshal ticketMerge to JSON: %s", err)
+	}
+
+	req := cw.NewRequest(fmt.Sprintf("/service/tickets/%d/merge", mainTicketID), "POST", ticketMergeJSON)
+	err = req.Do()
+	if err != nil {
+		return fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+	return nil
 }
 
 //SetTicketStatus will set the status on a ticket to the one provided
