@@ -313,5 +313,5 @@ func (cw *Site) GetCompanyTeamMembers(companyID int) (*[]CompanyTeamMember, erro
 	}
 
 	return teamMembers, nil
-
 }
+

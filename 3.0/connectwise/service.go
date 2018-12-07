@@ -748,6 +748,35 @@ func (cw *Site) AssignTicketToCompany(ticketID, companyID int) (*Ticket, error) 
 	return ticket, nil
 }
 
+//AssignTicketToSite
+func (cw *Site) AssignTicketToSite(ticketID, siteID int) (*Ticket, error) {
+	patches := &[]PatchString{}
+	patch := &PatchString{
+		Op:    "replace",
+		Path:  "site/id",
+		Value: strconv.Itoa(siteID)}
+	*patches = append(*patches, *patch)
+
+	patchBody, err := json.Marshal(patches)
+	if err != nil {
+		return nil, fmt.Errorf("could not marhsal patch json to byte slice: %s", err)
+	}
+
+	req := cw.NewRequest(fmt.Sprintf("/service/tickets/%d", ticketID), "PATCH", patchBody)
+	err = req.Do()
+	if err != nil {
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	ticket := &Ticket{}
+	err = json.Unmarshal(req.Body, ticket)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	return ticket, nil
+}
+
 //AssignTicketToMember will create a new schedule entry for the member and specify the ticket as the object
 func (cw *Site) TicketMerge(mainTicketID int, mergedTicketIDs []int, mergedTicketStatusID int) error {
 	ticketMerge := &TicketMerge{}
