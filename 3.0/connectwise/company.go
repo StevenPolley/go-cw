@@ -199,6 +199,62 @@ type CompanyTeamMember struct {
 	} `json:"_info"`
 }
 
+type CompanySite struct {
+	ID           int    `json:"id"`
+	Name         string `json:"name"`
+	AddressLine1 string `json:"addressLine1"`
+	City         string `json:"city"`
+	State        string `json:"state"`
+	Zip          string `json:"zip"`
+	Country      struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+		Info struct {
+			CountryHref string `json:"country_href"`
+		} `json:"_info"`
+	} `json:"country"`
+	AddressFormat        string  `json:"addressFormat"`
+	PhoneNumber          string  `json:"phoneNumber"`
+	FaxNumber            string  `json:"faxNumber"`
+	TaxCodeID            int     `json:"taxCodeId,omitempty"`
+	ExpenseReimbursement float64 `json:"expenseReimbursement"`
+	PrimaryAddressFlag   bool    `json:"primaryAddressFlag"`
+	DefaultShippingFlag  bool    `json:"defaultShippingFlag"`
+	DefaultBillingFlag   bool    `json:"defaultBillingFlag"`
+	DefaultMailingFlag   bool    `json:"defaultMailingFlag"`
+	InactiveFlag         bool    `json:"inactiveFlag"`
+	MobileGUID           string  `json:"mobileGuid"`
+	TimeZone             struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+		Info struct {
+			TimeZoneSetupHref string `json:"timeZoneSetup_href"`
+		} `json:"_info"`
+	} `json:"timeZone"`
+	Company struct {
+		ID         int    `json:"id"`
+		Identifier string `json:"identifier"`
+		Name       string `json:"name"`
+		Info       struct {
+			CompanyHref string `json:"company_href"`
+			MobileGUID  string `json:"mobileGuid"`
+		} `json:"_info"`
+	} `json:"company"`
+	Info struct {
+		LastUpdated time.Time `json:"lastUpdated"`
+		UpdatedBy   string    `json:"updatedBy"`
+		DateEntered time.Time `json:"dateEntered"`
+		EnteredBy   string    `json:"enteredBy"`
+	} `json:"_info"`
+	Calendar struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+		Info struct {
+			CalendarHref string `json:"calendar_href"`
+		} `json:"_info"`
+	} `json:"calendar,omitempty"`
+}
+
 //CompanyCount returns the number of companies in ConnectWise
 func (cw *Site) CompanyCount() (int, error) {
 	req := cw.NewRequest("/company/companies/count", "GET", nil)
@@ -315,3 +371,19 @@ func (cw *Site) GetCompanyTeamMembers(companyID int) (*[]CompanyTeamMember, erro
 	return teamMembers, nil
 }
 
+func (cw *Site) GetCompanySites(companyID int) (*[]CompanySite, error) {
+	req := cw.NewRequest(fmt.Sprintf("/company/companies/%d/sites", companyID), "GET", nil)
+	err := req.Do()
+	if err != nil {
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	companySite := &[]CompanySite{}
+	err = json.Unmarshal(req.Body, companySite)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	return companySite, nil
+
+}
