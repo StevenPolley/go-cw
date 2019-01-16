@@ -845,6 +845,7 @@ func (cw *Site) GetSources() (*[]Source, error) {
 //GetTicketNotes will accept a ticketID and return a slice of TicketNote.
 func (cw *Site) GetTicketNotes(ticketID int) (*[]TicketNote, error) {
 	req := cw.NewRequest(fmt.Sprintf("/service/tickets/%d/notes", ticketID), "GET", nil)
+	req.PageSize = 2000
 	err := req.Do()
 	if err != nil {
 		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
