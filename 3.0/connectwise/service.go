@@ -846,7 +846,7 @@ func (cw *Site) GetSources() (*[]Source, error) {
 func (cw *Site) GetTicketNotes(ticketID int) (*[]TicketNote, error) {
 	req := cw.NewRequest(fmt.Sprintf("/service/tickets/%d/notes", ticketID), "GET", nil)
 	req.PageSize = 2000
-	fmt.Println(req.PageSize)
+
 	err := req.Do()
 	if err != nil {
 		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
@@ -859,4 +859,19 @@ func (cw *Site) GetTicketNotes(ticketID int) (*[]TicketNote, error) {
 	}
 
 	return ticketNotes, nil
+}
+
+//GetTicketNotes will accept a ticketID and return a slice of TicketNote.
+func (cw *Site) PostTicketNote(ticketNote *TicketNote) error {
+	body, err := json.Marshal(ticketNote)
+	if err != nil {
+		return fmt.Errorf("failed to marshal ticket note to json: %v", err)
+	}
+	req := cw.NewRequest(fmt.Sprintf("/service/tickets/%d/notes", ticketNote.TicketID), "POST", body)
+
+	err = req.Do()
+	if err != nil {
+		return fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+	return nil
 }
