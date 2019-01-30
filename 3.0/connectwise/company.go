@@ -255,6 +255,89 @@ type CompanySite struct {
 	} `json:"calendar,omitempty"`
 }
 
+type Contact struct {
+	ID        int    `json:"id"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName,omitempty"`
+	Company   struct {
+		ID         int    `json:"id"`
+		Identifier string `json:"identifier"`
+		Name       string `json:"name"`
+		Info       struct {
+			CompanyHref string `json:"company_href"`
+			MobileGUID  string `json:"mobileGuid"`
+		} `json:"_info"`
+	} `json:"company"`
+	Site struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+		Info struct {
+			SiteHref   string `json:"site_href"`
+			MobileGUID string `json:"mobileGuid"`
+		} `json:"_info"`
+	} `json:"site,omitempty"`
+	InactiveFlag           bool   `json:"inactiveFlag"`
+	Title                  string `json:"title,omitempty"`
+	MarriedFlag            bool   `json:"marriedFlag"`
+	ChildrenFlag           bool   `json:"childrenFlag"`
+	PortalSecurityLevel    int    `json:"portalSecurityLevel,omitempty"`
+	DisablePortalLoginFlag bool   `json:"disablePortalLoginFlag,omitempty"`
+	UnsubscribeFlag        bool   `json:"unsubscribeFlag"`
+	MobileGUID             string `json:"mobileGuid"`
+	DefaultBillingFlag     bool   `json:"defaultBillingFlag"`
+	DefaultFlag            bool   `json:"defaultFlag"`
+	CommunicationItems     []struct {
+		ID   int `json:"id"`
+		Type struct {
+			ID   int    `json:"id"`
+			Name string `json:"name"`
+		} `json:"type"`
+		Value             string `json:"value"`
+		Extension         string `json:"extension,omitempty"`
+		DefaultFlag       bool   `json:"defaultFlag"`
+		CommunicationType string `json:"communicationType"`
+	} `json:"communicationItems,omitempty"`
+	TypeIds []interface{} `json:"typeIds"`
+	Info    struct {
+		LastUpdated        string `json:"lastUpdated"`
+		UpdatedBy          string `json:"updatedBy"`
+		CommunicationsHref string `json:"communications_href"`
+		NotesHref          string `json:"notes_href"`
+		TracksHref         string `json:"tracks_href"`
+		PortalSecurityHref string `json:"portalSecurity_href"`
+		ActivitiesHref     string `json:"activities_href"`
+		DocumentsHref      string `json:"documents_href"`
+		ConfigurationsHref string `json:"configurations_href"`
+		TicketsHref        string `json:"tickets_href"`
+		OpportunitiesHref  string `json:"opportunities_href"`
+		ProjectsHref       string `json:"projects_href"`
+		ImageHref          string `json:"image_href"`
+	} `json:"_info"`
+	AddressLine1 string `json:"addressLine1,omitempty"`
+	City         string `json:"city,omitempty"`
+	State        string `json:"state,omitempty"`
+	Zip          string `json:"zip,omitempty"`
+	Department   struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+		Info struct {
+			DepartmentHref string `json:"department_href"`
+		} `json:"_info"`
+	} `json:"department,omitempty"`
+	RelationshipOverride string `json:"relationshipOverride,omitempty"`
+	School               string `json:"school,omitempty"`
+	NickName             string `json:"nickName,omitempty"`
+	SignificantOther     string `json:"significantOther,omitempty"`
+	Relationship         struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+		Info struct {
+			RelationshipHref string `json:"relationship_href"`
+		} `json:"_info"`
+	} `json:"relationship,omitempty"`
+	Gender string `json:"gender,omitempty"`
+}
+
 //CompanyCount returns the number of companies in ConnectWise
 func (cw *Site) CompanyCount() (int, error) {
 	req := cw.NewRequest("/company/companies/count", "GET", nil)
@@ -386,4 +469,41 @@ func (cw *Site) GetCompanySites(companyID int) (*[]CompanySite, error) {
 
 	return companySite, nil
 
+}
+
+func (cw *Site) GetContactByID(contactID int) (*Contact, error) {
+	req := cw.NewRequest(fmt.Sprintf("/company/contacts/%d", contactID), "GET", nil)
+	err := req.Do()
+	if err != nil {
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	contact := &Contact{}
+	err = json.Unmarshal(req.Body, contact)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	return contact, nil
+}
+
+func (cw *Site) NewContact(contact *Contact) (*Contact, error) {
+	jsonContact, err := json.Marshal(contact)
+	if err != nil {
+		return nil, fmt.Errorf("could not marshal json data: %s", err)
+	}
+
+	req := cw.NewRequest("/company/contacts", "POST", jsonContact)
+	err = req.Do()
+	if err != nil {
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	contact = &Contact{}
+	err = json.Unmarshal(req.Body, contact)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	return contact, nil
 }
