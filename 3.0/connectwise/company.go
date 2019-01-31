@@ -338,6 +338,24 @@ type Contact struct {
 	Gender string `json:"gender,omitempty"`
 }
 
+type ContactCommunication struct {
+	ID        int `json:"id"`
+	ContactID int `json:"contactId"`
+	Type      struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+	} `json:"type"`
+	Value             string `json:"value"`
+	DefaultFlag       bool   `json:"defaultFlag"`
+	MobileGUID        string `json:"mobileGuid"`
+	CommunicationType string `json:"communicationType"`
+	Info              struct {
+		LastUpdated       time.Time `json:"lastUpdated"`
+		UpdatedBy         string    `json:"updatedBy"`
+		ContactMobileGUID string    `json:"contactMobileGuid"`
+	} `json:"_info"`
+}
+
 //CompanyCount returns the number of companies in ConnectWise
 func (cw *Site) CompanyCount() (int, error) {
 	req := cw.NewRequest("/company/companies/count", "GET", nil)
@@ -506,4 +524,62 @@ func (cw *Site) NewContact(contact *Contact) (*Contact, error) {
 	}
 
 	return contact, nil
+}
+
+func (cw *Site) UpdateContact(contact *Contact) (*Contact, error) {
+	jsonContact, err := json.Marshal(contact)
+	if err != nil {
+		return nil, fmt.Errorf("could not marshal json data: %s", err)
+	}
+
+	req := cw.NewRequest(fmt.Sprintf("/company/contacts/%d", contact.ID), "PUT", jsonContact)
+	err = req.Do()
+	if err != nil {
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	contact = &Contact{}
+	err = json.Unmarshal(req.Body, contact)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	return contact, nil
+}
+
+func (cw *Site) GetContactCommunicationsByContactID(contactID, communicationID int) (*[]ContactCommunication, error) {
+	req := cw.NewRequest(fmt.Sprintf("/company/contacts/%d/communications", contactID), "GET", nil)
+	err := req.Do()
+	if err != nil {
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	communications := &[]ContactCommunication{}
+	err = json.Unmarshal(req.Body, communications)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	return communications, nil
+}
+
+func (cw *Site) NewContactCommunication(communication *ContactCommunication) (*ContactCommunication, error) {
+	jsonCommunication, err := json.Marshal(communication)
+	if err != nil {
+		return nil, fmt.Errorf("could not marshal json data: %s", err)
+	}
+
+	req := cw.NewRequest(fmt.Sprintf("/company/contacts/%d/communications", communication.ContactID), "POST", jsonCommunication)
+	err = req.Do()
+	if err != nil {
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	communication = &ContactCommunication{}
+	err = json.Unmarshal(req.Body, communication)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	return communication, nil
 }
