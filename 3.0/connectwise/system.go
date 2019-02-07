@@ -305,6 +305,25 @@ func (cw *Site) GetSystemMemberByIdentifier(identifier string) (*Member, error) 
 	return member, nil
 }
 
+func (cw *Site) SearchSystemMembersByIdentifier(identifier string) (*[]Member, error) {
+	req := cw.NewRequest("/system/members", "GET", nil)
+	req.URLValues.Add("conditions", "identifier contains \""+identifier+"\"")
+	req.URLValues.Add("pageSize", "40")
+	req.URLValues.Add("fields", "identifier,officeEmail")
+	err := req.Do()
+	if err != nil {
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	members := &[]Member{}
+	err = json.Unmarshal(req.Body, members)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	return members, nil
+}
+
 //GetCallbacks returns a slice of Callback structs containing all the callbacks currently registered with ConnectWise
 func (cw *Site) GetCallbacks() (*[]Callback, error) {
 	req := cw.NewRequest("/system/callbacks", "GET", nil)
