@@ -583,3 +583,22 @@ func (cw *Site) NewContactCommunication(communication *ContactCommunication) (*C
 
 	return communication, nil
 }
+
+func (cw *Site) SearchCompanyByName(name string) (*[]Company, error) {
+	req := cw.NewRequest("/company/companies", "GET", nil)
+	req.URLValues.Add("conditions", "name contains \""+name+"\"")
+	req.URLValues.Add("pageSize", "40")
+	req.URLValues.Add("fields", "name")
+	err := req.Do()
+	if err != nil {
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	companies := &[]Company{}
+	err = json.Unmarshal(req.Body, companies)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	return companies, nil
+}
