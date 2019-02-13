@@ -16,6 +16,7 @@ type Site struct {
 	CompanyName    string //Used for user impersonation, but collected for API key as well so it can be accessed publicly later on if required
 	AuthUsername   string // User for user impersonation
 	AuthMemberHash string //Used for user impersonation
+	ClientID       string // Required as of 2019.02 https://developer.connectwise.com/ClientID
 
 }
 
@@ -25,19 +26,19 @@ type Count struct {
 }
 
 //NewSite returns a pointer to a ConnectwiseSite struct with the site and auth string available for use in API requests
-func NewSite(site string, publicKey string, privateKey string, company string) *Site {
+func NewSite(site, publicKey, privateKey, company, clientID string) *Site {
 	//The auth string must be formatted in this way when used in requests to the API
 	authString := fmt.Sprintf("%s+%s:%s", company, publicKey, privateKey)
 	authString = base64.StdEncoding.EncodeToString([]byte(authString))
 	authString = fmt.Sprintf("Basic %s", authString)
 
-	cwSite := Site{Site: site, AuthAPIKey: authString, CompanyName: company}
+	cwSite := Site{Site: site, AuthAPIKey: authString, CompanyName: company, ClientID: clientID}
 
 	return &cwSite
 }
 
 //NewSiteUserImpersonation is similar to NewSite but is used for user impersonation and instead of an API key takes the username and password
-func NewSiteUserImpersonation(site string, username string, password string, company string) (*Site, error) {
+func NewSiteUserImpersonation(site, username, password, company, clientID string) (*Site, error) {
 
 	//We must retrieve a user hash which is good for 4 hours
 	authBaseURL := strings.TrimSuffix(site, "/apis/3.0")
@@ -82,7 +83,7 @@ func NewSiteUserImpersonation(site string, username string, password string, com
 		return nil, fmt.Errorf("could not authenticate with connectwise as %s: connectwise response body is %s", username, string(body))
 	}
 
-	cwSite := Site{Site: site, AuthUsername: username, AuthMemberHash: string(body), CompanyName: company}
+	cwSite := Site{Site: site, AuthUsername: username, AuthMemberHash: string(body), CompanyName: company, ClientID: clientID}
 
 	return &cwSite, nil
 }

@@ -88,6 +88,7 @@ func (req *Request) Do() error {
 		httpreq.AddCookie(&cookieMemberHash)
 		httpreq.AddCookie(&cookieMemberID)
 	}
+	httpreq.Header.Set("clientId", req.CW.ClientID)
 	httpreq.Header.Set("Content-Type", "application/json")
 	resp, err := client.Do(httpreq)
 	if err != nil {
