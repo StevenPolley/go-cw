@@ -694,17 +694,35 @@ func (cw *Site) AssignTicketToTeam(ticketID, teamID int) (*Ticket, error) {
 
 //AssignTicketToMember will create a new schedule entry for the member and specify the ticket as the object
 func (cw *Site) AssignTicketToMember(ticketID, memberID int) (*ScheduleEntry, error) {
+	req := cw.NewRequest("/schedule/entries", "GET", nil)
+	req.URLValues.Add("conditions", fmt.Sprintf("member/id=%d and objectId=%d and doneFlag=false", memberID, ticketID))
+	err := req.Do()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get schedule entries on ticketID '%d' and memberID '%d': %v", ticketID, memberID, err)
+	}
+
+	scheduleEntries := &[]ScheduleEntry{}
+	err = json.Unmarshal(req.Body, scheduleEntries)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	// The member is already assined to the ticket, so return the first schedule entry
+	if len(*scheduleEntries) > 0 {
+		return &(*scheduleEntries)[0], nil
+	}
+
 	scheduleEntry := &ScheduleEntry{}
 	scheduleEntry.ObjectID = ticketID
 	scheduleEntry.Member.ID = memberID
-	scheduleEntry.Type.ID = 4 //TBD: This should not be here lol
+	scheduleEntry.Type.ID = 4 //TBD: This should not be here lol *UPDATE* Yes it should be here, this is a constant ID across all CW instances aparently (found in CW docs)
 
 	jsonScheduleEntry, err := json.Marshal(scheduleEntry)
 	if err != nil {
 		return nil, fmt.Errorf("could not marshal json data: %s", err)
 	}
 
-	req := cw.NewRequest("/schedule/entries", "POST", jsonScheduleEntry)
+	req = cw.NewRequest("/schedule/entries", "POST", jsonScheduleEntry)
 	err = req.Do()
 	if err != nil {
 		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
@@ -717,6 +735,44 @@ func (cw *Site) AssignTicketToMember(ticketID, memberID int) (*ScheduleEntry, er
 	}
 
 	return scheduleEntry, nil
+}
+
+// RemoveTicketFromMember accepts a ticketID and a memberID and will mark the member as done, will return an error if it fails
+func (cw *Site) RemoveTicketFromMember(ticketID, memberID int) error {
+	req := cw.NewRequest("/schedule/entries", "GET", nil)
+	req.URLValues.Add("conditions", fmt.Sprintf("member/id=%d and objectId=%d and doneFlag=false", memberID, ticketID))
+	err := req.Do()
+	if err != nil {
+		return fmt.Errorf("failed to get schedule entries on ticketID '%d' and memberID '%d': %v", ticketID, memberID, err)
+	}
+
+	scheduleEntries := &[]ScheduleEntry{}
+	err = json.Unmarshal(req.Body, scheduleEntries)
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	for _, scheduleEntry := range *scheduleEntries {
+		patches := &[]PatchString{}
+		patch := &PatchString{
+			Op:    "replace",
+			Path:  "doneFlag",
+			Value: "true"}
+		*patches = append(*patches, *patch)
+
+		patchBody, err := json.Marshal(patches)
+		if err != nil {
+			return fmt.Errorf("could not marshal patch json to byte slice: %v", err)
+		}
+
+		req = cw.NewRequest(fmt.Sprintf("/schedule/entries/%d", scheduleEntry.ID), "PATCH", patchBody)
+		err = req.Do()
+		if err != nil {
+			return fmt.Errorf("failed update done field for scheduleEntry ID '%d': %v", scheduleEntry.ID, err)
+		}
+	}
+
+	return nil
 }
 
 //AssignTicketToCompany
