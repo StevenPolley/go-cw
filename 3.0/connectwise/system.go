@@ -289,6 +289,22 @@ func (cw *Site) GetSystemMembers() (*[]Member, error) {
 	return members, nil
 }
 
+func (cw *Site) GetSystemMemberByID(memberID int) (*Member, error) {
+	req := cw.NewRequest(fmt.Sprintf("/system/members/%d", memberID), "GET", nil)
+	err := req.Do()
+	if err != nil {
+		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+	}
+
+	member := &Member{}
+	err = json.Unmarshal(req.Body, member)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+	}
+
+	return member, nil
+}
+
 func (cw *Site) GetSystemMemberByIdentifier(identifier string) (*Member, error) {
 	req := cw.NewRequest(fmt.Sprintf("/system/members/%s", identifier), "GET", nil)
 	err := req.Do()
