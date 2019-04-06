@@ -18,13 +18,6 @@ type Company struct {
 			StatusHref string `json:"status_href"`
 		} `json:"_info"`
 	} `json:"status"`
-	Type struct {
-		ID   int    `json:"id"`
-		Name string `json:"name"`
-		Info struct {
-			TypeHref string `json:"type_href"`
-		} `json:"_info"`
-	} `json:"type"`
 	AddressLine1 string `json:"addressLine1"`
 	City         string `json:"city"`
 	State        string `json:"state"`
@@ -36,11 +29,23 @@ type Company struct {
 			CountryHref string `json:"country_href"`
 		} `json:"_info"`
 	} `json:"country"`
-	PhoneNumber    string `json:"phoneNumber"`
-	FaxNumber      string `json:"faxNumber"`
-	Website        string `json:"website"`
-	TerritoryID    int    `json:"territoryId"`
-	MarketID       int    `json:"marketId"`
+	PhoneNumber string `json:"phoneNumber"`
+	FaxNumber   string `json:"faxNumber"`
+	Website     string `json:"website"`
+	Territory   struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+		Info struct {
+			LocationHref string `json:"location_href"`
+		} `json:"_info"`
+	} `json:"territory"`
+	Market struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+		Info struct {
+			MarketHref string `json:"Market_href"`
+		} `json:"_info"`
+	} `json:"market"`
 	AccountNumber  string `json:"accountNumber"`
 	DefaultContact struct {
 		ID   int    `json:"id"`
@@ -52,19 +57,20 @@ type Company struct {
 	DateAcquired      time.Time `json:"dateAcquired"`
 	AnnualRevenue     float64   `json:"annualRevenue"`
 	NumberOfEmployees int       `json:"numberOfEmployees"`
-	TimeZone          struct {
+	TimeZoneSetup     struct {
 		ID   int    `json:"id"`
 		Name string `json:"name"`
 		Info struct {
 			TimeZoneSetupHref string `json:"timeZoneSetup_href"`
 		} `json:"_info"`
-	} `json:"timeZone"`
+	} `json:"timeZoneSetup"`
 	LeadFlag          bool   `json:"leadFlag"`
 	UnsubscribeFlag   bool   `json:"unsubscribeFlag"`
 	UserDefinedField1 string `json:"userDefinedField1"`
 	UserDefinedField2 string `json:"userDefinedField2"`
 	UserDefinedField3 string `json:"userDefinedField3"`
-	UserDefinedField7 string `json:"userDefinedField7"`
+	UserDefinedField4 string `json:"userDefinedField4"`
+	UserDefinedField5 string `json:"userDefinedField5"`
 	VendorIdentifier  string `json:"vendorIdentifier"`
 	TaxIdentifier     string `json:"taxIdentifier"`
 	TaxCode           struct {
@@ -107,16 +113,8 @@ type Company struct {
 	InvoiceToEmailAddress string `json:"invoiceToEmailAddress"`
 	DeletedFlag           bool   `json:"deletedFlag"`
 	MobileGUID            string `json:"mobileGuid"`
-	Currency              struct {
-		ID      int    `json:"id"`
-		Symbol  string `json:"symbol"`
-		IsoCode string `json:"isoCode"`
-		Name    string `json:"name"`
-		Info    struct {
-			CurrencyHref string `json:"currency_href"`
-		} `json:"_info"`
-	} `json:"currency"`
-	Info struct {
+	TypeIds               []int  `json:"typeIds"`
+	Info                  struct {
 		LastUpdated        time.Time `json:"lastUpdated"`
 		UpdatedBy          string    `json:"updatedBy"`
 		DateEntered        time.Time `json:"dateEntered"`
@@ -383,6 +381,8 @@ func (cw *Site) GetCompanyByName(companyName string) (*Company, error) {
 	if err != nil {
 		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
 	}
+
+	fmt.Println(string(req.Body))
 
 	co := &[]Company{}
 	err = json.Unmarshal(req.Body, co)
