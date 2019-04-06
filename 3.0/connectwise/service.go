@@ -693,23 +693,23 @@ func (cw *Site) AssignTicketToTeam(ticketID, teamID int) (*Ticket, error) {
 }
 
 //AssignTicketToMember will create a new schedule entry for the member and specify the ticket as the object
-func (cw *Site) AssignTicketToMember(ticketID, memberID int) (*ScheduleEntry, error) {
+func (cw *Site) AssignTicketToMember(ticketID, memberID int) (*ScheduleEntry, bool, error) {
 	req := cw.NewRequest("/schedule/entries", "GET", nil)
 	req.URLValues.Add("conditions", fmt.Sprintf("member/id=%d and objectId=%d and doneFlag=false", memberID, ticketID))
 	err := req.Do()
 	if err != nil {
-		return nil, fmt.Errorf("failed to get schedule entries on ticketID '%d' and memberID '%d': %v", ticketID, memberID, err)
+		return nil, false, fmt.Errorf("failed to get schedule entries on ticketID '%d' and memberID '%d': %v", ticketID, memberID, err)
 	}
 
 	scheduleEntries := &[]ScheduleEntry{}
 	err = json.Unmarshal(req.Body, scheduleEntries)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+		return nil, false, fmt.Errorf("failed to unmarshal body into struct: %s", err)
 	}
 
 	// The member is already assined to the ticket, so return the first schedule entry
 	if len(*scheduleEntries) > 0 {
-		return &(*scheduleEntries)[0], nil
+		return &(*scheduleEntries)[0], false, nil
 	}
 
 	scheduleEntry := &ScheduleEntry{}
@@ -719,22 +719,22 @@ func (cw *Site) AssignTicketToMember(ticketID, memberID int) (*ScheduleEntry, er
 
 	jsonScheduleEntry, err := json.Marshal(scheduleEntry)
 	if err != nil {
-		return nil, fmt.Errorf("could not marshal json data: %s", err)
+		return nil, false, fmt.Errorf("could not marshal json data: %s", err)
 	}
 
 	req = cw.NewRequest("/schedule/entries", "POST", jsonScheduleEntry)
 	err = req.Do()
 	if err != nil {
-		return nil, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
+		return nil, false, fmt.Errorf("request failed for %s: %s", req.RestAction, err)
 	}
 
 	scheduleEntry = &ScheduleEntry{}
 	err = json.Unmarshal(req.Body, scheduleEntry)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal body into struct: %s", err)
+		return nil, false, fmt.Errorf("failed to unmarshal body into struct: %s", err)
 	}
 
-	return scheduleEntry, nil
+	return scheduleEntry, true, nil
 }
 
 // RemoveTicketFromMember accepts a ticketID and a memberID and will mark the member as done, will return an error if it fails
